@@ -125,6 +125,11 @@
             <button onclick="closeModal('priceModal')" class="text-slate-500 font-bold text-xl">&times;</button>
         </div>
         <div class="p-6 overflow-y-auto text-[10px] space-y-4 whitespace-pre-wrap custom-scrollbar text-slate-300">
+✍️PAKET 10k
+●GOLD & MONEY 999M
+●LEVEL MAX
+──────⊹⊱✫⊰⊹──────
+            
 ✍️PAKET HEMAT UNLOCK MOUNTAIN MAP 
 ●1B GOLD & 2B DOLLAR UNLIMITED , MAX LEVEL 50
 ●UNLOCK 2 MOUNTAIN MAP
@@ -399,11 +404,12 @@ Price : 200k
             document.getElementById('historyList').innerHTML=data.data.map(h=>{
                 const acc = h.email + " | " + h.pass;
                 return `<div class="bg-slate-900/50 p-4 rounded-2xl border-l-4 ${h.isLast?'border-emerald-500':'border-blue-500'} mb-2">
-                    <div class="flex justify-between text-[9px] font-black uppercase mb-1">
-                        <span class="${h.isLast?'text-emerald-400':'text-blue-400'}">${h.paket}</span>
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="text-[9px] font-black uppercase ${h.isLast?'text-emerald-400':'text-blue-400'}">${h.paket}</span>
+                        <span class="text-[8px] text-slate-500 font-bold italic">${h.time} WIB</span>
                     </div>
-                    <p class="text-xs font-mono text-white opacity-80 mb-2">${acc}</p>
-                    <button onclick="copyToClipboard('${acc}')" class="text-[8px] bg-blue-600/20 text-blue-400 px-2 py-1 rounded border border-blue-500/20 uppercase font-bold">Salin</button>
+                    <p class="text-xs font-mono text-white opacity-80 mb-2 break-all">${acc}</p>
+                    <button onclick="copyToClipboard('${acc}')" class="text-[8px] bg-blue-600/20 text-blue-400 px-2 py-1 rounded border border-blue-500/20 uppercase font-bold active:scale-95">Salin</button>
                 </div>`;
             }).join('');
         }
@@ -466,3 +472,4 @@ Price : 200k
 </script>
 </body>
 </html>
+
