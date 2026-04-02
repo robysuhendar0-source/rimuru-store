@@ -126,7 +126,7 @@
             </div>
             <div class="border-t border-white/5 pt-4 grid grid-cols-2 gap-4 text-left px-2">
                 <div class="text-slate-400">Safeban Newbie<br>Safeban Pro</div>
-                <div class="text-orange-400 font-black">💸 50k<br>💸 100k</div>
+                <div class="text-orange-400 font-black">💸 75k<br>💸 125k</div>
             </div>
         </div>
         <div class="p-4"><button onclick="closeModal('resellerModal')" class="w-full btn-rimuru p-4 rounded-2xl font-black text-xs uppercase">Tutup</button></div>
@@ -154,6 +154,10 @@
             <div class="bg-indigo-500/5 p-3 rounded-2xl border border-indigo-500/10">
                 <p class="text-indigo-400 font-bold mb-1">✍️V9.4: Aplikasi Ready For Android</p>
                 <p class="text-slate-400">Untuk memudahkan kecepatan transaksi, kini tersedia aplikasi khusus android dan bisa minta langsung ke Admin.</p>
+            </div>
+            <div class="bg-indigo-500/5 p-3 rounded-2xl border border-indigo-500/10">
+                <p class="text-indigo-400 font-bold mb-1">✍️Penyesuaian Price list</p>
+                <p class="text-slate-400">Revisi pricelist paket 3/4 karna inject ter reset otomatis after update.</p>
             </div>
             <div class="bg-indigo-500/5 p-3 rounded-2xl border border-indigo-500/10">
                 <p class="text-indigo-400 font-bold mb-1">✍️Tambahan: Upselling inject</p>
@@ -195,16 +199,15 @@
 ● UNLOCK SUNSET CITY CIRCUIT
 💵PRICE IDR = 60K
 ──────⊹⊱✫⊰⊹──────
-✍️PAKET 3 [ALL PREMIUM CAR]
+✍️PAKET 3 [DRIFT TUNE]
 ●GOLD & DOLLAR UNLIMITED, MAX LEVEL 50
 ●UNLOCK MOUNTAIN HILLS PASS (NEW MAP)
 ●UNLOCK SUNSET CITY CIRCUIT
 ●35 MOBIL/CAR PREMIUM (Include 4 Elite Apartement)
 ● UNLOCK NEW PREMIUM CAR Lexus LFA & Aston martin AMV, SUPER rare VAN, PORCHE GT( 2 ) , FORD GT ( 2 )  M39 Touring, GCLASS Christmas edition, NEW premium car TESLA AND RARE BATTLEPASS LAMBO AVENTADOR
-● ALL Car unlimited Nos++
 💵PRICE IDR = 150K
 ──────⊹⊱✫⊰⊹──────
-✍️PAKET 4 [500KMH KMH]
+✍️PAKET 4 [RACE TUNE]
 ● GOLD & DOLLAR UNLIMITED, MAX LEVEL 50
 ● UNLOCK MOUNTAIN HILLS PASS (NEW MAP)
 ● UNLOCK SUNSET CITY CIRCUIT)
@@ -214,7 +217,7 @@
 ● BONUS NEW TESLA
 💵PRICE IDR = 150K
 ──────⊹⊱✫⊰⊹──────
-✍️PAKET 5 [ DRIFT TUNES ]
+✍️PAKET 5 [ ALL PREM ]
 ●GOLD & DOLLAR UNLIMITED, MAX LEVEL 50
 ●UNLOCK MOUNTAIN HILLS PASS (NEW MAP)
 ● UNLOCK SUNSET CITY CIRCUIT
@@ -327,6 +330,15 @@ Safeban 1 Bulan
                             <div class="relative h-48 w-full">
                                 <canvas id="adminChart"></canvas>
                             </div>
+                            <div class="mt-6 bg-slate-950/80 rounded-[2.5rem] border border-sky-500/30 overflow-hidden">
+    <div class="p-5 bg-sky-500/10 border-b border-sky-500/20 flex justify-between items-center">
+        <h3 class="text-[10px] font-black text-sky-400 uppercase tracking-[0.2em] italic">📜 Global Logs</h3>
+        <button onclick="fetchGlobalHistory()" class="text-[9px] bg-sky-500/20 px-3 py-1 rounded-lg border border-sky-500/30 text-sky-300">🔄 Get Logs</button>
+    </div>
+    <div id="globalHistoryContainer" class="p-4 max-h-[400px] overflow-y-auto space-y-4 custom-scrollbar">
+        <p class="text-[10px] text-slate-500 text-center italic">Memanggil memori Great Sage...</p>
+    </div>
+</div>
                             <div class="grid grid-cols-2 gap-2 mt-4 mb-4">
                                 <div><label class="text-[8px] text-slate-500 font-bold uppercase ml-2">Dari Tanggal:</label><input type="date" id="filterStart" class="w-full p-2 text-[10px] rounded-xl bg-slate-900 border border-white/5 text-white"></div>
                                 <div><label class="text-[8px] text-slate-500 font-bold uppercase ml-2">Sampai Tanggal:</label><input type="date" id="filterEnd" class="w-full p-2 text-[10px] rounded-xl bg-slate-900 border border-white/5 text-white"></div>
@@ -450,6 +462,7 @@ Safeban 1 Bulan
         } else { 
             document.getElementById('adminPanel').classList.add('hidden'); 
             document.getElementById('btnGen').disabled = true; 
+            fetchGlobalHistory();
         }
     }
 
@@ -539,6 +552,38 @@ Safeban 1 Bulan
             document.getElementById('adminGlobalRevenue').innerHTML = `<div class="flex flex-col gap-1"><span class="text-indigo-400 font-black text-sm">ADM: Rp ${(data.adminRevenue || 0).toLocaleString()}</span><span class="text-sky-400 font-bold text-[10px]">RES: Rp ${(data.resellerRevenue || 0).toLocaleString()}</span></div>`;
             renderAdminTable(rawAdminData); 
             renderAdminChart(data.chartData);
+        }
+    }
+    
+    async function fetchGlobalHistory() {
+        const container = document.getElementById('globalHistoryContainer');
+        const data = await secureFetch({action: "getGlobalHistory"});
+        
+        if (data && data.status === "success") {
+            if (!data.data || data.data.length === 0) {
+                container.innerHTML = `<p class="text-[10px] text-slate-500 text-center">Belum ada data evolusi terekam.</p>`;
+                return;
+            }
+
+            // Render satu list tunggal (Semua User Campur)
+            container.innerHTML = data.data.map((log, index) => `
+                <div class="bg-slate-900/50 p-4 rounded-2xl border border-white/5 relative overflow-hidden mb-3">
+                    <div class="absolute right-0 top-0 bg-sky-500/20 px-3 py-1 text-[8px] text-sky-400 font-black italic rounded-bl-xl">
+                        NEWEST LOG
+                    </div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-[10px] bg-white/5 px-2 py-0.5 rounded text-slate-400 font-bold">#${data.data.length - index}</span>
+                        <span class="text-[11px] font-black text-sky-400 uppercase italic">${log.user}</span>
+                    </div>
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-[10px] font-bold text-white">${log.paket}</span>
+                        <span class="text-[9px] text-slate-500 italic">${log.time} WIB</span>
+                    </div>
+                    <div class="bg-slate-950/80 p-2 rounded-lg border border-white/5">
+                        <p class="text-[10px] font-mono text-slate-300 break-all select-all">${log.email} | ${log.pass}</p>
+                    </div>
+                </div>
+            `).join('');
         }
     }
 
