@@ -512,7 +512,7 @@ GARANSI SAFEBAN = 1 Bulan
         const data = await secureFetch({ action:"generate", paket: document.getElementById('paket').value, image: base64Img });
         if(data && data.status === "success"){
             document.getElementById('resPaket').innerText=data.paket;
-            document.getElementById('resAccount').innerText=data.email+" | "+data.pass;
+            document.getElementById('resAccount').innerText=data.email + "\n" + data.pass;
             openModal('resultModal'); base64Img = ""; document.getElementById('bukti').value = "";
         } else { alert(data ? data.msg : "Stok Terkuras!"); btn.innerText="GENERATE SKILL"; btn.disabled = (currentRole !== "admin" && !base64Img); }
     }
