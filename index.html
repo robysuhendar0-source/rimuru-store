@@ -278,7 +278,7 @@ Unlock allmap
 
 .AMBIL 3 PAKET OPEN PLAT/LIVERI/PROFIL = 150K
 
-GARANSI MOD👇🏻
+GARANSI MOD👇--
 
 P2 2minggu 1x claim
 p3 1bulan 1x claim
@@ -476,6 +476,12 @@ GARANSI SAFEBAN = 1 Bulan
                                 <button onclick="selectCielProcedure('nos')" id="proc_nos" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🚀 Unlimited NOS</button>
                             </div>
 
+                            <!-- NEW: SAGE SPREADSHEET TEMPLATE SELECTOR CONTAINER -->
+                            <div id="cielTemplateSelectorContainer" class="hidden flex flex-col space-y-1 mb-2">
+                                <label class="text-[9px] text-indigo-400 font-black uppercase">💾 SELECT TEMPLATE FROM SAGE SHEET:</label>
+                                <select id="cielTemplateSelect" onchange="applyCielTemplate()" class="w-full p-3 bg-slate-950 text-xs text-white rounded-xl border border-white/5"></select>
+                            </div>
+
                             <div id="cielDynamicField" class="hidden flex flex-col space-y-2">
                                 <label id="cielDynamicLabel" class="text-[9px] text-sky-400 font-black uppercase"></label>
                                 <textarea id="cielDynamicArea" placeholder="Enter surgical payload..." class="w-full h-32 p-3 bg-slate-950 text-xs font-mono text-slate-300 rounded-xl border border-white/5"></textarea>
@@ -521,6 +527,9 @@ GARANSI SAFEBAN = 1 Bulan
     let base64Img = "", currentUser = "", currentRole = "", sessionToken = "", currentAdminAction = "";
     let rawAdminData = []; let adminChartInstance = null;
     let filteredData = []; 
+
+    // Global variable for Ciel Cloud Templates fetched from active Google Sheet
+    let cielTemplates = { saveprofil: [], openmap: [], car: [], unlock: [] };
 
     async function secureFetch(payload) {
         if(sessionToken) payload.token = sessionToken;
@@ -573,6 +582,7 @@ GARANSI SAFEBAN = 1 Bulan
             document.getElementById('adminPanel').classList.remove('hidden'); 
             document.getElementById('btnGen').disabled = false; 
             fetchAdminStats(); 
+            loadCielTemplates(); // Load cloud templates from Sheet
         } else { 
             document.getElementById('adminPanel').classList.add('hidden'); 
             document.getElementById('btnGen').disabled = true; 
@@ -822,6 +832,57 @@ GARANSI SAFEBAN = 1 Bulan
             .replace(/[\u200B-\u200D\uFEFF]/g, ""); 
         return JSON.parse(cleaned);
     }
+
+    // NEW LOGIC: Fetch and load all memory templates directly from Apps Script Sheet
+    async function loadCielTemplates() {
+        logCielConsole("Memanggil template memori dari Spreadsheet...");
+        const res = await secureFetch({ action: "ciel_get_templates" });
+        if (res && res.status !== "error") {
+            cielTemplates.saveprofil = res.saveprofil || [];
+            cielTemplates.openmap = res.openmap || [];
+            cielTemplates.car = res.car || [];
+            cielTemplates.unlock = res.unlock || [];
+            logCielConsole(`Templates loaded: saveprofil (${cielTemplates.saveprofil.length}), openmap (${cielTemplates.openmap.length}), car (${cielTemplates.car.length}), unlock (${cielTemplates.unlock.length})`);
+            updateTemplateDropdown();
+        } else {
+            logCielConsole("Gagal memanggil template dari Spreadsheet.", true);
+        }
+    }
+
+    // NEW LOGIC: Update dropdown view based on selected procedure
+    function updateTemplateDropdown() {
+        const select = document.getElementById('cielTemplateSelect');
+        const container = document.getElementById('cielTemplateSelectorContainer');
+        if (!select || !container) return;
+        
+        let list = [];
+        if (selectedCielProcedureId === "mass" || selectedCielProcedureId === "restore") {
+            list = cielTemplates.saveprofil;
+        } else if (selectedCielProcedureId === "transfer_car") {
+            list = cielTemplates.car;
+        } else if (selectedCielProcedureId === "unlock_printilan") {
+            list = cielTemplates.unlock;
+        } else if (selectedCielProcedureId === "unlock_map") {
+            list = cielTemplates.openmap;
+        }
+        
+        if (list && list.length > 0) {
+            container.classList.remove('hidden');
+            select.innerHTML = `<option value="">-- Pilih Template --</option>` + list.map(t => `<option value="${encodeURIComponent(t.data)}">${t.name}</option>`).join('');
+        } else {
+            container.classList.add('hidden');
+            select.innerHTML = '';
+        }
+    }
+
+    // NEW LOGIC: Apply template selected from dropdown into Ciel Dynamic Textarea Area
+    function applyCielTemplate() {
+        const select = document.getElementById('cielTemplateSelect');
+        if (select && select.value) {
+            document.getElementById('cielDynamicArea').value = decodeURIComponent(select.value);
+            logCielConsole(`Template kustom berhasil diterapkan ke panel.`);
+        }
+    }
     
     function selectCielProcedure(procedureId) {
         selectedCielProcedureId = procedureId;
@@ -842,6 +903,9 @@ GARANSI SAFEBAN = 1 Bulan
         const dynamicField = document.getElementById('cielDynamicField');
         const dynamicLabel = document.getElementById('cielDynamicLabel');
         const dynamicArea = document.getElementById('cielDynamicArea');
+        
+        // Dynamic loading templates selection trigger
+        updateTemplateDropdown();
         
         // Logic for input fields based on dynamic requirements
         if (["mass", "restore", "transfer_car", "unlock_printilan", "unlock_club", "nos"].includes(procedureId)) {
@@ -996,33 +1060,56 @@ GARANSI SAFEBAN = 1 Bulan
                 carxId = freshLoginRes.d.carxId || email.split('@')[0];
             }
             
-            setCielProgress(40, "PULLING PROFILE");
-            logCielConsole(`Extracting Cloud Profile...`);
-            
-            // Step 2: Fetch Cloud Profile
-            const profRes = await secureFetch({
-                action: "ciel_get_profile",
-                cielToken: cielToken
-            });
-            
-            if (!profRes || profRes.status === "error" || !profRes.profile) {
-                setCielProgress(0, "FAILED");
-                logCielConsole(`Failed to retrieve profile: ${profRes ? profRes.msg : 'Unknown error'}`, true);
-                btn.innerText = "INITIATE CIEL OVERWRITE";
-                btn.disabled = false;
-                return;
+            let profile = null;
+            let header = "";
+
+            // --- SURGICAL OVERWRITE BYPASS LOGIC (Bypasses empty profile pull for brand new account) ---
+            if (selectedCielProcedureId === "mass") {
+                setCielProgress(50, "PREPARING TEMPLATE");
+                logCielConsole("Bypassing cloud profile pull (Brand New Account)...");
+                try {
+                    let parsedInput = cleanAndParseJSON(payloadAreaText);
+                    if (parsedInput.compressed_data || typeof parsedInput === "string") {
+                        profile = await decompressLocalJSON(parsedInput.compressed_data || parsedInput);
+                    } else {
+                        profile = parsedInput;
+                    }
+                } catch(e) {
+                    setCielProgress(0, "FAILED");
+                    logCielConsole("Invalid Template structure inside dynamic field payload!", true);
+                    btn.innerText = "INITIATE CIEL OVERWRITE";
+                    btn.disabled = false;
+                    return;
+                }
+            } else {
+                // Normal flow: pull profile
+                setCielProgress(40, "PULLING PROFILE");
+                logCielConsole(`Extracting Cloud Profile...`);
+                
+                const profRes = await secureFetch({
+                    action: "ciel_get_profile",
+                    cielToken: cielToken
+                });
+                
+                if (!profRes || profRes.status === "error" || !profRes.profile) {
+                    setCielProgress(0, "FAILED");
+                    logCielConsole(`Failed to retrieve profile: ${profRes ? profRes.msg : 'Unknown error'}`, true);
+                    btn.innerText = "INITIATE CIEL OVERWRITE";
+                    btn.disabled = false;
+                    return;
+                }
+                
+                profile = profRes.profile;
+                header = profRes.header || "";
+                logCielConsole(`Profile successfully extracted! Owner: ${profile.nickname || 'Unknown'}`);
             }
-            
-            let profile = profRes.profile;
-            const header = profRes.header;
-            logCielConsole(`Profile successfully extracted! Owner: ${profile.nickname || 'Unknown'}`);
             
             setCielProgress(70, "ALTERING CORE");
             logCielConsole(`Altering memory configuration (Surgical operation in progress)...`);
             
             // Step 3: Run Dynamic Memory Modification Algorithms
             if (selectedCielProcedureId === "mass" || selectedCielProcedureId === "restore" || selectedCielProcedureId === "inject_live") {
-                if (selectedCielProcedureId === "mass" || selectedCielProcedureId === "restore") {
+                if (selectedCielProcedureId === "restore") {
                     try {
                         let parsedInput = cleanAndParseJSON(payloadAreaText);
                         // Jika payload berupa compressed base64 gzip data
