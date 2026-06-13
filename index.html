@@ -454,6 +454,12 @@ GARANSI SAFEBAN = 1 Bulan
                             <input type="text" id="ciel_email" placeholder="Victim Email / CarX ID" class="w-full p-3 bg-slate-950 text-xs text-white rounded-xl">
                             <input type="password" id="ciel_pass" placeholder="Victim Password / Code" class="w-full p-3 bg-slate-950 text-xs text-white rounded-xl">
                             
+                            <!-- DYNAMIC ACC LOOP INPUT FOR MASS REGISTRATION -->
+                            <div id="cielMassControl" class="hidden flex flex-col space-y-1">
+                                <label class="text-[8px] text-yellow-400 font-black uppercase">Loop Register Target Count:</label>
+                                <input type="number" id="ciel_mass_count" value="1" min="1" max="100" class="w-full p-3 bg-slate-950 text-xs text-white rounded-xl">
+                            </div>
+
                             <h4 class="text-[10px] text-indigo-400 font-black uppercase pt-2">2. CUSTOM INJECT RESOURCE</h4>
                             <input type="number" id="ciel_silver" placeholder="Silver Value (Skip if blank)" class="w-full p-3 bg-slate-950 text-xs text-white rounded-xl">
                             <input type="number" id="ciel_gold" placeholder="Gold Value (Skip if blank)" class="w-full p-3 bg-slate-950 text-xs text-white rounded-xl">
@@ -527,6 +533,9 @@ GARANSI SAFEBAN = 1 Bulan
     let base64Img = "", currentUser = "", currentRole = "", sessionToken = "", currentAdminAction = "";
     let rawAdminData = []; let adminChartInstance = null;
     let filteredData = []; 
+
+    // Fragment list dari CLI Node untuk meniru tempest_register.js
+    const FRAGMENTS = ['wet','gig','wry','old','pet','apt','eat','ply','eel','hop','ape','vex','dog','box','up','ham','buy','aid','oar','pen','sue','art','paw','sit','cow','icy','way','map','ill','toe','owe','mid','bus','rip','bag','mow','far','woe','off','arc','dub','flu','ice','new','tan','ten','sky','fly','dot','ace','bad','cat','dim','egg','fan','gum','hot','ink','joy','kit','log','mud','net','owl','pub','red','sun','tip','use','van','win','yak','zip','bit','cop','day','era','fix','get','hub','ion','jet','key','low','mix','nod','odd','pop','raw','sea','tax','urn','via','web','zen','cry','dug','end','fit','gas','hit','jar','kin','let','max','not','one','put','run','set','top','big','fat','sad','mad','nap','tap','cap','lap','gap','rap','sap','yap','zig','zag','fog','cog','jog','hog','bog','tug','hug','mug','rug','bug','pug','jug','rub','sub','tub','cub','lab','tab','cab','jab','nab','dab','fib','rib','bib','lib','nib','oak','elm','ash','pine','fern','leaf','root','stem','seed','bud','rose','lily','iris','moss','weed','vine','bush','gold','iron','zinc','lead','coal','rock','sand','clay','dust','salt','acid','base','atom','wave','beam','ray','star','moon','wind','rain','snow','hail','mist','dew','heat','cold','fire','dark','light','gray','blue','pink','cyan','teal','lime','mint','ruby','jade','aqua','navy','rust','char','volt','flux','byte','code','data','node','link','mesh','grid','core','zone','area','spot','path','road','rail','gate','door','wall','roof','floor','beam','post','port','dock','ship','boat','car','bike','gear','tool','wire','pipe','tube','vent','bolt','nail','saw','axe','glue','disk','file','page','post','view','read','edit','save','load','send','call','talk','chat','ping','push','pull','sync','scan','test','build','make','form','list','sort','pick','pack','set','get','add','drop','move','jump','walk','step','spin','turn','roll','rise','fall','hold','keep','take','give','find','seek','look','show','tell','wish','hope','fear','love','hate','care','luck','fate','soul','mind','life','time','age','year','week','hour','fast','slow','high','low','near','deep','wide','tall','tiny','huge','long','soft','hard','loud','calm','cool','warm','bold','brave','wise','keen','neat','wild','tame','pure','real','true','rich','poor','full','void','open','shut','back','next','last','past','soon','once','ever','over','down','left','west','east','side','north','south'];
 
     // Global variable for Ciel Cloud Templates fetched from active Google Sheet
     let cielTemplates = { saveprofil: [], openmap: [], car: [], unlock: [] };
@@ -833,6 +842,26 @@ GARANSI SAFEBAN = 1 Bulan
         return JSON.parse(cleaned);
     }
 
+    // New Helper functions for random sampling from Node CLI
+    function getRandomSample(arr, n) {
+        let result = [];
+        let copy = [...arr];
+        for (let i = 0; i < n; i++) {
+            let idx = Math.floor(Math.random() * copy.length);
+            result.push(copy[idx]);
+            copy.splice(idx, 1);
+        }
+        return result;
+    }
+
+    // Generator logic to fully mimic tempest_register.js CLI
+    function generateCielRandomUsername() {
+        const chosen = getRandomSample(FRAGMENTS, 2);
+        let username = chosen.join("");
+        if (Math.random() < 0.5) username += Math.floor(Math.random() * 90 + 10);
+        return `${username.toLowerCase()}@ak.gy`;
+    }
+
     // NEW LOGIC: Fetch and load all memory templates directly from Apps Script Sheet
     async function loadCielTemplates() {
         logCielConsole("Memanggil template memori dari Spreadsheet...");
@@ -903,6 +932,14 @@ GARANSI SAFEBAN = 1 Bulan
         const dynamicField = document.getElementById('cielDynamicField');
         const dynamicLabel = document.getElementById('cielDynamicLabel');
         const dynamicArea = document.getElementById('cielDynamicArea');
+        const massControl = document.getElementById('cielMassControl');
+        
+        // Tampilkan input Mass Loop Target Count jika memilih prosedur mass register
+        if (procedureId === "mass") {
+            massControl.classList.remove('hidden');
+        } else {
+            massControl.classList.add('hidden');
+        }
         
         // Dynamic loading templates selection trigger
         updateTemplateDropdown();
@@ -950,7 +987,11 @@ GARANSI SAFEBAN = 1 Bulan
         const exp = parseInt(document.getElementById('ciel_exp').value) || null;
         const payloadAreaText = document.getElementById('cielDynamicArea').value;
         
-        if (!email || !pass) {
+        // Membaca loop count mass register (default 1 jika bukan mass reg atau input salah)
+        const massCountInput = document.getElementById('ciel_mass_count');
+        const massLoopCount = (selectedCielProcedureId === "mass" && massCountInput) ? (parseInt(massCountInput.value) || 1) : 1;
+        
+        if (selectedCielProcedureId !== "mass" && (!email || !pass)) {
             return alert("Email dan Password target wajib diisi untuk otentikasi soul corridor!");
         }
         
@@ -959,6 +1000,112 @@ GARANSI SAFEBAN = 1 Bulan
         btn.disabled = true;
         
         try {
+            // =========================================================================
+            // --- NEW: MASS REGISTER MULTI-ACCOUNT SAGE LOOP SYSTEM ---
+            // =========================================================================
+            if (selectedCielProcedureId === "mass") {
+                setCielProgress(5, "INITIALIZING MASS REG");
+                logCielConsole(`Memulai Mass Register Loop sebanyak: [ ${massLoopCount} Akun ]...`);
+                
+                let successAccounts = [];
+                const targetPass = pass || "11223344"; // default pass dari script CLI
+                
+                for (let idx = 0; step = idx < massLoopCount; idx++) {
+                    const stepProgress = Math.floor((idx / massLoopCount) * 90) + 5;
+                    setCielProgress(stepProgress, `MASS REGISTERING ${idx + 1}/${massLoopCount}`);
+                    
+                    // 1. Generate Random Username ala CLI
+                    const targetEmail = generateCielRandomUsername();
+                    logCielConsole(`[Akun ${idx + 1}/${massLoopCount}] Mendaftarkan: ${targetEmail}`);
+                    
+                    // 2. Register ke CarX Server
+                    const regRes = await secureFetch({
+                        action: "ciel_register_account",
+                        email: targetEmail,
+                        pass: targetPass
+                    });
+                    
+                    if (!regRes || !regRes.d || !regRes.d.token) {
+                        logCielConsole(`[!] Gagal mendaftarkan ${targetEmail}: ${JSON.stringify(regRes)}`, true);
+                        continue;
+                    }
+                    
+                    const token = regRes.d.token;
+                    const realNick = regRes.d.carxId || targetEmail.split('@')[0];
+                    logCielConsole(`[✔] Registrasi Sukses! Nickname: ${realNick}. Mempersiapkan Core Memory...`);
+                    
+                    // 3. Dekompresi Profile Master & Penjagaan Header Magic Bytes agar tidak stuck loading screen!
+                    let finalProfile = null;
+                    let fileHeader = "";
+                    
+                    try {
+                        let parsedInput = cleanAndParseJSON(payloadAreaText);
+                        let sourcePayload = parsedInput.compressed_data || payloadAreaText;
+                        
+                        // Ekstrak Gzip biner dan header biner asli menggunakan GAS
+                        const decRes = await secureFetch({
+                            action: "ciel_get_profile",
+                            cielToken: "dummy",
+                            forceRaw: sourcePayload
+                        });
+                        
+                        if (decRes && decRes.status === "success" && decRes.profile) {
+                            finalProfile = decRes.profile;
+                            fileHeader = decRes.header || "";
+                        } else {
+                            logCielConsole("[!] Data master gagal didekompresi biner. Memaksakan parse JSON mentah...", true);
+                            finalProfile = parsedInput;
+                        }
+                    } catch (err) {
+                        logCielConsole(`[!] Error parsing Master Soul JSON: ${err.message}`, true);
+                        break;
+                    }
+                    
+                    // 4. Modifikasi Magicules
+                    finalProfile.nickname = realNick;
+                    if (silver !== null) finalProfile.resources.soft.amount = silver;
+                    if (gold !== null) finalProfile.resources.hard = { amount: gold };
+                    if (exp !== null) finalProfile.resources.experience = { amount: exp };
+                    finalProfile.last_save_time = Math.floor(Date.now() / 1000);
+                    
+                    // 5. Enkripsi Gzip + Header Biner & Push ke Cloud Profile CarX
+                    logCielConsole(`[⚙️] Menyatukan Header Magic Bytes dengan Gzip untuk ${realNick}...`);
+                    const pushRes = await secureFetch({
+                        action: "ciel_push_profile",
+                        cielToken: token,
+                        profile: finalProfile,
+                        header: fileHeader
+                    });
+                    
+                    if (pushRes && (pushRes.status === 200 || pushRes.status === 201 || pushRes.d)) {
+                        logCielConsole(`[✨ SUCCESS] Akun ${targetEmail} berhasil dibuat & di-inject sempurna!`);
+                        successAccounts.push(`${targetEmail}|${targetPass}`);
+                    } else {
+                        logCielConsole(`[!] Gagal sinkronisasi data cloud untuk ${targetEmail}: ${JSON.stringify(pushRes)}`, true);
+                    }
+                    
+                    // Delay jeda/cooling-down antar register demi bypass holy-field anti-spam
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
+                
+                setCielProgress(100, "COMPLETE");
+                logCielConsole(`\n--- [ 🌀 CIEL MASS REGISTER PROCESS FINISHED ] ---`);
+                logCielConsole(`Total Akun Terbuka Sukses: ${successAccounts.length} Akun.`);
+                
+                if (successAccounts.length > 0) {
+                    alert(`Mass Register Selesai! ${successAccounts.length} akun berhasil di-inject tanpa stuck loading screen.`);
+                    document.getElementById('cielDynamicField').classList.remove('hidden');
+                    document.getElementById('cielDynamicLabel').innerText = "MASS REGISTER RESULT ACC LIST:";
+                    document.getElementById('cielDynamicArea').value = successAccounts.join("\n");
+                }
+                btn.innerText = "INITIATE CIEL OVERWRITE";
+                btn.disabled = false;
+                return;
+            }
+            
+            // =========================================================================
+            // --- REGULAR SINGLE PROCEDURES (CLONE, INJECT LIVE, NOS, MAP, ETC.) ---
+            // =========================================================================
             setCielProgress(10, "AUTHENTICATING");
             logCielConsole(`Connecting to CarX gateway for: ${email}...`);
             
@@ -1016,27 +1163,16 @@ GARANSI SAFEBAN = 1 Bulan
                 logCielConsole(`Rebirth success! Fresh Token secured. Proceeding to inject memory structure.`);
             }
 
-            // Normal & Mass Register Auth handshaking
+            // Normal Auth handshaking
             let cielToken = "";
             let carxId = "";
             
             if (selectedCielProcedureId !== "restore") {
-                let authRes;
-                if (selectedCielProcedureId === "mass") {
-                    setCielProgress(20, "MASS REGISTERING");
-                    logCielConsole("Executing fresh auto-registration for Ciel newborn target...");
-                    authRes = await secureFetch({
-                        action: "ciel_register_account",
-                        email: email,
-                        pass: pass
-                    });
-                } else {
-                    authRes = await secureFetch({
-                        action: "ciel_authenticate",
-                        email: email,
-                        pass: pass
-                    });
-                }
+                let authRes = await secureFetch({
+                    action: "ciel_authenticate",
+                    email: email,
+                    pass: pass
+                });
                 
                 if (!authRes || !authRes.d || !authRes.d.token) {
                     setCielProgress(0, "FAILED");
@@ -1063,52 +1199,32 @@ GARANSI SAFEBAN = 1 Bulan
             let profile = null;
             let header = "";
 
-            // --- SURGICAL OVERWRITE BYPASS LOGIC (Bypasses empty profile pull for brand new account) ---
-            if (selectedCielProcedureId === "mass") {
-                setCielProgress(50, "PREPARING TEMPLATE");
-                logCielConsole("Bypassing cloud profile pull (Brand New Account)...");
-                try {
-                    let parsedInput = cleanAndParseJSON(payloadAreaText);
-                    if (parsedInput.compressed_data || typeof parsedInput === "string") {
-                        profile = await decompressLocalJSON(parsedInput.compressed_data || parsedInput);
-                    } else {
-                        profile = parsedInput;
-                    }
-                } catch(e) {
-                    setCielProgress(0, "FAILED");
-                    logCielConsole("Invalid Template structure inside dynamic field payload!", true);
-                    btn.innerText = "INITIATE CIEL OVERWRITE";
-                    btn.disabled = false;
-                    return;
-                }
-            } else {
-                // Normal flow: pull profile
-                setCielProgress(40, "PULLING PROFILE");
-                logCielConsole(`Extracting Cloud Profile...`);
-                
-                const profRes = await secureFetch({
-                    action: "ciel_get_profile",
-                    cielToken: cielToken
-                });
-                
-                if (!profRes || profRes.status === "error" || !profRes.profile) {
-                    setCielProgress(0, "FAILED");
-                    logCielConsole(`Failed to retrieve profile: ${profRes ? profRes.msg : 'Unknown error'}`, true);
-                    btn.innerText = "INITIATE CIEL OVERWRITE";
-                    btn.disabled = false;
-                    return;
-                }
-                
-                profile = profRes.profile;
-                header = profRes.header || "";
-                logCielConsole(`Profile successfully extracted! Owner: ${profile.nickname || 'Unknown'}`);
+            // Normal flow: pull profile
+            setCielProgress(40, "PULLING PROFILE");
+            logCielConsole(`Extracting Cloud Profile...`);
+            
+            const profRes = await secureFetch({
+                action: "ciel_get_profile",
+                cielToken: cielToken
+            });
+            
+            if (!profRes || profRes.status === "error" || !profRes.profile) {
+                setCielProgress(0, "FAILED");
+                logCielConsole(`Failed to retrieve profile: ${profRes ? profRes.msg : 'Unknown error'}`, true);
+                btn.innerText = "INITIATE CIEL OVERWRITE";
+                btn.disabled = false;
+                return;
             }
+            
+            profile = profRes.profile;
+            header = profRes.header || "";
+            logCielConsole(`Profile successfully extracted! Owner: ${profile.nickname || 'Unknown'}`);
             
             setCielProgress(70, "ALTERING CORE");
             logCielConsole(`Altering memory configuration (Surgical operation in progress)...`);
             
             // Step 3: Run Dynamic Memory Modification Algorithms
-            if (selectedCielProcedureId === "mass" || selectedCielProcedureId === "restore" || selectedCielProcedureId === "inject_live") {
+            if (selectedCielProcedureId === "restore" || selectedCielProcedureId === "inject_live") {
                 if (selectedCielProcedureId === "restore") {
                     try {
                         let parsedInput = cleanAndParseJSON(payloadAreaText);
