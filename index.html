@@ -949,7 +949,7 @@ GARANSI SAFEBAN = 1 Bulan
             dynamicField.classList.remove('hidden');
             if (procedureId === "mass") {
                 dynamicLabel.innerText = "Master Soul Profile JSON (Compressed or raw JSON):";
-                dynamicArea.placeholder = `{\n  "nickname": "Test",\n  "resources": {\n    "soft": { "amount": 100000 },\n    "hard": { "amount": 10000 }\n  }\n}`;
+                dynamicArea.placeholder = `{\n  "nickname": "Test",\n  "resources": {\n    "soft": { "amount": 100000 },\n    "hard": { "amount": 1000 }\n  }\n}`;
             } else if (procedureId === "restore") {
                 dynamicLabel.innerText = "Rebirth Soul Base Profile JSON Data:";
                 dynamicArea.placeholder = "Pasted Base compressed_data profile here...";
@@ -991,8 +991,11 @@ GARANSI SAFEBAN = 1 Bulan
         const massCountInput = document.getElementById('ciel_mass_count');
         const massLoopCount = (selectedCielProcedureId === "mass" && massCountInput) ? (parseInt(massCountInput.value) || 1) : 1;
         
-        if (selectedCielProcedureId !== "mass" && (!email || !pass)) {
+        if (selectedCielProcedureId !== "mass" && selectedCielProcedureId !== "clone" && (!email || !pass)) {
             return alert("Email dan Password target wajib diisi untuk otentikasi soul corridor!");
+        }
+        if (selectedCielProcedureId === "clone" && (!email || !pass)) {
+            return alert("Email dan Password SOURCE wajib diisi untuk melakukan kloning!");
         }
         
         const btn = document.getElementById('btnCielExecute');
@@ -1000,6 +1003,102 @@ GARANSI SAFEBAN = 1 Bulan
         btn.disabled = true;
         
         try {
+            // =========================================================================
+            // --- NEW: CLONE ACCOUNT SAGE SURGICAL SYSTEM (MATCHING CLI WORKFLOW) ---
+            // =========================================================================
+            if (selectedCielProcedureId === "clone") {
+                setCielProgress(10, "AUTHENTICATING SOURCE");
+                logCielConsole(`Menghubungkan ke koridor source: ${email}...`);
+                
+                // 1. Authenticate Source
+                const authSource = await secureFetch({
+                    action: "ciel_authenticate",
+                    email: email,
+                    pass: pass
+                });
+                if (!authSource || !authSource.d || !authSource.d.token) {
+                    setCielProgress(0, "FAILED");
+                    logCielConsole(`Gagal otentikasi source account: ${JSON.stringify(authSource)}`, true);
+                    return;
+                }
+                const sourceToken = authSource.d.token;
+                logCielConsole(`Koneksi Source Berhasil! Token secured.`);
+                
+                // 2. Fetch Source Profile
+                setCielProgress(30, "EXTRACTING SOURCE");
+                logCielConsole(`Mengambil profil dari Source...`);
+                const sourceProfileRes = await secureFetch({
+                    action: "ciel_get_profile",
+                    cielToken: sourceToken
+                });
+                if (!sourceProfileRes || sourceProfileRes.status === "error" || !sourceProfileRes.profile) {
+                    setCielProgress(0, "FAILED");
+                    logCielConsole(`Gagal mengambil profil source: ${sourceProfileRes ? sourceProfileRes.msg : 'Unknown error'}`, true);
+                    return;
+                }
+                let rawPayload = sourceProfileRes.profile;
+                let header = sourceProfileRes.header || "";
+                logCielConsole(`Profil Source berhasil diambil! Owner: ${rawPayload.nickname || 'Unknown'}`);
+                
+                // 3. Generate Target Username
+                setCielProgress(50, "GENERATING TARGET ID");
+                const randomEmail = generateCielRandomUsername();
+                const targetPass = "11223344"; // standard target pass dari CLI
+                logCielConsole(`Mempersiapkan identitas target baru: ${randomEmail}`);
+                
+                // 4. Register Target Random Account
+                setCielProgress(65, "REGISTERING TARGET");
+                const regTarget = await secureFetch({
+                    action: "ciel_register_account",
+                    email: randomEmail,
+                    pass: targetPass
+                });
+                if (!regTarget || !regTarget.d || !regTarget.d.token) {
+                    setCielProgress(0, "FAILED");
+                    logCielConsole(`Registrasi target gagal: ${JSON.stringify(regTarget)}`, true);
+                    return;
+                }
+                const targetToken = regTarget.d.token;
+                const realNick = regTarget.d.carxId || randomEmail.split('@')[0];
+                logCielConsole(`Registrasi target sukses! Nickname: ${realNick}`);
+                
+                // 5. Rewrite target Soul Identity
+                setCielProgress(80, "CLONING SOUL");
+                logCielConsole(`Menulis ulang struktur data jiwa (Cloning)...`);
+                rawPayload.nickname = realNick;
+                if (silver !== null) rawPayload.resources.soft.amount = silver;
+                if (gold !== null) rawPayload.resources.hard = { amount: gold };
+                if (exp !== null) rawPayload.resources.experience = { amount: exp };
+                rawPayload.last_save_time = Math.floor(Date.now() / 1000);
+                
+                // 6. Push cloned profile to Target Cloud Account
+                setCielProgress(90, "SYNCHRONIZING");
+                logCielConsole(`Mengunggah data kloning ke cloud target...`);
+                const pushTarget = await secureFetch({
+                    action: "ciel_push_profile",
+                    cielToken: targetToken,
+                    profile: rawPayload,
+                    header: header
+                });
+                if (pushTarget && (pushTarget.status === 200 || pushTarget.status === 201 || pushTarget.d)) {
+                    setCielProgress(100, "COMPLETE");
+                    logCielConsole(`[✨ CLONE SUCCESS] Akun ${randomEmail} berhasil di-clone & di-inject sempurna!`);
+                    
+                    // Show result in the console / text area
+                    document.getElementById('cielDynamicField').classList.remove('hidden');
+                    document.getElementById('cielDynamicLabel').innerText = "CLONE RESULT CREDENTIALS:";
+                    document.getElementById('cielDynamicArea').value = `${randomEmail}|${targetPass}`;
+                    
+                    alert(`Clone Selesai!\nAkun Baru: ${randomEmail}\nPassword: ${targetPass}\nNickname: ${realNick}`);
+                } else {
+                    setCielProgress(0, "FAILED");
+                    logCielConsole(`Gagal sinkronisasi data kloning ke cloud target: ${JSON.stringify(pushTarget)}`, true);
+                }
+                btn.innerText = "INITIATE CIEL OVERWRITE";
+                btn.disabled = false;
+                return;
+            }
+
             // =========================================================================
             // --- NEW: MASS REGISTER MULTI-ACCOUNT SAGE LOOP SYSTEM ---
             // =========================================================================
@@ -1010,7 +1109,7 @@ GARANSI SAFEBAN = 1 Bulan
                 let successAccounts = [];
                 const targetPass = pass || "11223344"; // default pass dari script CLI
                 
-                for (let idx = 0; step = idx < massLoopCount; idx++) {
+                for (let idx = 0; idx < massLoopCount; idx++) {
                     const stepProgress = Math.floor((idx / massLoopCount) * 90) + 5;
                     setCielProgress(stepProgress, `MASS REGISTERING ${idx + 1}/${massLoopCount}`);
                     
