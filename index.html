@@ -49,9 +49,48 @@
             border: 1px solid white;
             animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
         }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(125, 211, 252, 0.3); border-radius: 10px; }
     </style>
 </head>
 <body oncontextmenu="return false;">
+
+<!-- PUBLIC WARRANTY SECTION -->
+<div id="publicWarrantySection" class="hidden flex h-screen items-center justify-center p-4 lg:p-6 bg-slate-950 overflow-y-auto">
+    <div class="glass-card p-6 lg:p-8 rounded-[3rem] w-full max-w-lg shadow-2xl border border-sky-500/20 relative my-auto">
+        <button onclick="closePublicWarranty()" class="absolute top-6 right-6 text-slate-500 text-2xl hover:text-white">&times;</button>
+        <div class="mb-6">
+            <h2 class="text-2xl font-black italic text-sky-400 mb-1">Pusat Restorasi Akun</h2>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Fasilitas Klaim Garansi Mandiri</p>
+        </div>
+        
+        <div class="bg-indigo-500/10 border border-indigo-500/20 p-4 rounded-2xl mb-6">
+            <h3 class="text-[10px] font-black text-indigo-400 mb-2 uppercase tracking-widest">📌 CARA KLAIM GARANSI:</h3>
+            <ol class="text-[9px] text-slate-300 list-decimal list-inside space-y-1 ml-1 leading-relaxed">
+                <li>Masukkan data akun Anda yang terkena Banned (format: <span class="text-sky-400 font-mono">email|pass</span>).</li>
+                <li>Sistem akan mengecek otomatis sisa masa garansi pembelian Anda.</li>
+                <li>Jika valid, akun akan di-reset & bisa di buka kembali (seperti pas awal beli).</li>
+                <li>Proses sepenuhnya Gratis dan otomatis 24 Jam Non-Stop!</li>
+            </ol>
+        </div>
+
+        <textarea id="publicWarrantyInput" placeholder="akun_anda1@f5.si|password123" class="w-full h-32 p-4 bg-slate-900/50 rounded-2xl text-white text-xs font-mono border border-white/5 mb-4 custom-scrollbar focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 outline-none transition-all"></textarea>
+        
+        <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden mb-2">
+            <div id="publicCielProgressBar" class="bg-gradient-to-r from-emerald-400 to-sky-500 h-full w-0 transition-all duration-300"></div>
+        </div>
+        <div class="flex justify-between items-center mb-4">
+            <span class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Status Engine:</span>
+            <span id="publicCielStatusLabel" class="text-[9px] text-emerald-400 font-bold italic uppercase tracking-widest">Standby</span>
+        </div>
+        
+        <div id="publicCielLiveConsole" class="bg-black/80 p-4 rounded-2xl h-28 overflow-y-auto text-[9px] font-mono text-emerald-500 space-y-1 custom-scrollbar leading-relaxed mb-6 border border-white/5">
+            [Sistem Restorasi Mandiri Siap Menerima Input]
+        </div>
+
+        <button id="btnPublicWarranty" onclick="executePublicWarranty()" class="w-full btn-rimuru p-4 rounded-2xl font-black text-xs uppercase shadow-lg shimmer-btn tracking-widest text-white">Eksekusi Claim Garansi</button>
+    </div>
+</div>
 
 <div id="resultModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 modal-overlay">
     <div class="glass-card w-full max-w-sm rounded-[2.5rem] overflow-hidden flex flex-col animate-pop border-2 border-sky-400/50">
@@ -307,6 +346,9 @@ GARANSI SAFEBAN = 1 Bulan
                 <input type="text" id="user" placeholder="Nama Citizens" class="w-full p-4 bg-slate-900/50 rounded-2xl text-white text-center font-bold">
                 <input type="password" id="pass" placeholder="Magic Password" class="w-full p-4 bg-slate-900/50 rounded-2xl text-white text-center font-bold">
                 <button onclick="handleLogin()" id="btnLogin" class="w-full btn-rimuru p-4 rounded-2xl font-black uppercase shadow-lg shimmer-btn tracking-widest text-sm">LOGIN</button>
+                <div class="pt-2 border-t border-white/10 mt-4">
+                    <button onclick="openPublicWarranty()" class="w-full bg-slate-800/50 p-4 rounded-2xl font-black uppercase text-slate-400 border border-white/5 text-[10px] tracking-widest hover:bg-slate-800/80 transition-all">🛡️ Pusat Klaim Garansi</button>
+                </div>
             </div>
         </div>
     </div>
@@ -441,76 +483,80 @@ GARANSI SAFEBAN = 1 Bulan
                         <button id="btnAdminSubmit" onclick="submitAdminAction()" class="w-full bg-indigo-500 p-4 rounded-2xl font-black text-[11px] uppercase shadow-xl hover:bg-indigo-400 transition-colors">Execute Command</button>
                     </div>
                 </div>
+            </div>
 
-                <!-- NEW: CIEL SURGICAL INTEGRATED CONSOLE TAB -->
-                <div class="p-6 bg-slate-950/90 border-2 border-sky-500/30 rounded-[3rem] relative overflow-hidden">
-                    <div class="absolute -top-16 -right-16 w-32 h-32 bg-sky-500/10 rounded-full blur-2xl"></div>
-                    <h3 class="text-sky-400 font-black text-sm uppercase mb-4 tracking-[0.2em] text-center italic">⚔️ CIEL SURGICAL PROTOCOL CONSOLE ⚔️</h3>
-                    <p class="text-[9px] text-slate-400 text-center uppercase tracking-wider mb-6 italic">"Multi-Dimensional Memory alteration & Cloud Surgery Overwrite"</p>
-                    
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                        <div class="bg-slate-900/80 p-4 rounded-3xl border border-white/5 flex flex-col space-y-3">
+            <!-- NEW: CIEL SURGICAL INTEGRATED CONSOLE TAB -->
+            <div id="cielSurgicalConsole" class="hidden p-6 bg-slate-950/90 border-2 border-sky-500/30 rounded-[3rem] relative overflow-hidden">
+                <div class="absolute -top-16 -right-16 w-32 h-32 bg-sky-500/10 rounded-full blur-2xl"></div>
+                <h3 class="text-sky-400 font-black text-sm uppercase mb-4 tracking-[0.2em] text-center italic">⚔️ CIEL SURGICAL PROTOCOL CONSOLE ⚔️</h3>
+                <p class="text-[9px] text-slate-400 text-center uppercase tracking-wider mb-6 italic">"Multi-Dimensional Memory alteration & Cloud Surgery Overwrite"</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div class="bg-slate-900/80 p-4 rounded-3xl border border-white/5 flex flex-col space-y-3">
+                        
+                        <div id="cielIdentityControl" class="flex flex-col space-y-3">
                             <h4 class="text-[10px] text-sky-400 font-black uppercase">1. TARGET IDENTITY</h4>
                             <input type="text" id="ciel_email" placeholder="Victim Email / CarX ID" class="w-full p-3 bg-slate-950 text-xs text-white rounded-xl">
                             <input type="password" id="ciel_pass" placeholder="Victim Password / Code" class="w-full p-3 bg-slate-950 text-xs text-white rounded-xl">
-                            
-                            <!-- DYNAMIC ACC LOOP INPUT FOR MASS REGISTRATION -->
-                            <div id="cielMassControl" class="hidden flex flex-col space-y-1">
-                                <label class="text-[8px] text-yellow-400 font-black uppercase">Loop Register Target Count:</label>
-                                <input type="number" id="ciel_mass_count" value="1" min="1" max="100" class="w-full p-3 bg-slate-950 text-xs text-white rounded-xl">
-                            </div>
+                        </div>
+                        
+                        <!-- DYNAMIC ACC LOOP INPUT FOR MASS REGISTRATION -->
+                        <div id="cielMassControl" class="hidden flex flex-col space-y-1">
+                            <h4 class="text-[10px] text-sky-400 font-black uppercase">1. TARGET LOOP COUNT</h4>
+                            <input type="number" id="ciel_mass_count" value="1" min="1" max="100" class="w-full p-3 bg-slate-950 text-xs text-white rounded-xl">
+                        </div>
 
+                        <div id="cielCustomResourceControl" class="flex flex-col space-y-3">
                             <h4 class="text-[10px] text-indigo-400 font-black uppercase pt-2">2. CUSTOM INJECT RESOURCE</h4>
                             <input type="number" id="ciel_silver" placeholder="Silver Value (Skip if blank)" class="w-full p-3 bg-slate-950 text-xs text-white rounded-xl">
                             <input type="number" id="ciel_gold" placeholder="Gold Value (Skip if blank)" class="w-full p-3 bg-slate-950 text-xs text-white rounded-xl">
                             <input type="number" id="ciel_exp" placeholder="EXP Value (Skip if blank)" class="w-full p-3 bg-slate-950 text-xs text-white rounded-xl">
                         </div>
-
-                        <div class="lg:col-span-2 bg-slate-900/80 p-4 rounded-3xl border border-white/5 flex flex-col space-y-4">
-                            <h4 class="text-[10px] text-sky-400 font-black uppercase">3. SELECT SURGERY PROCEDURE</h4>
-                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-[9px] font-bold">
-                                <button onclick="selectCielProcedure('mass')" id="proc_mass" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🌀 Mass Register</button>
-                                <button onclick="selectCielProcedure('clone')" id="proc_clone" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">👥 Clone Account</button>
-                                <button onclick="selectCielProcedure('inject_live')" id="proc_inject_live" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">⚡ Live Inject</button>
-                                <button onclick="selectCielProcedure('restore')" id="proc_restore" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">⏳ Rebirth Regression</button>
-                                <button onclick="selectCielProcedure('erase')" id="proc_erase" class="p-3 bg-slate-950 hover:bg-red-950/40 text-red-400 rounded-xl border border-red-500/10 transition-all text-left">💥 Erase Account</button>
-                                <button onclick="selectCielProcedure('decode')" id="proc_decode" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">👁️ Decode Profile</button>
-                                <button onclick="selectCielProcedure('transfer_car')" id="proc_transfer_car" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🚗 Transfer Car</button>
-                                <button onclick="selectCielProcedure('unlock_printilan')" id="proc_unlock_printilan" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🔓 Unlock Printilan</button>
-                                <button onclick="selectCielProcedure('unlock_club')" id="proc_unlock_club" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🏆 Unlock All Club</button>
-                                <button onclick="selectCielProcedure('unlock_map')" id="proc_unlock_map" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🗺️ Unlock Map</button>
-                                <button onclick="selectCielProcedure('nos')" id="proc_nos" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🚀 Unlimited NOS</button>
-                            </div>
-
-                            <!-- NEW: SAGE SPREADSHEET TEMPLATE SELECTOR CONTAINER -->
-                            <div id="cielTemplateSelectorContainer" class="hidden flex flex-col space-y-1 mb-2">
-                                <label class="text-[9px] text-indigo-400 font-black uppercase">💾 SELECT TEMPLATE FROM SAGE SHEET:</label>
-                                <select id="cielTemplateSelect" onchange="applyCielTemplate()" class="w-full p-3 bg-slate-950 text-xs text-white rounded-xl border border-white/5"></select>
-                            </div>
-
-                            <div id="cielDynamicField" class="hidden flex flex-col space-y-2">
-                                <label id="cielDynamicLabel" class="text-[9px] text-sky-400 font-black uppercase"></label>
-                                <textarea id="cielDynamicArea" placeholder="Enter surgical payload..." class="w-full h-32 p-3 bg-slate-950 text-xs font-mono text-slate-300 rounded-xl border border-white/5"></textarea>
-                            </div>
-
-                            <div class="pt-2">
-                                <button id="btnCielExecute" onclick="executeCielSurgicalOperation()" class="w-full btn-rimuru p-4 rounded-2xl font-black text-xs uppercase tracking-widest text-white shadow-xl">INITIATE CIEL OVERWRITE</button>
-                            </div>
-                        </div>
                     </div>
 
-                    <!-- Progress/Log area for Ciel Operations -->
-                    <div class="mt-4 p-4 bg-slate-900 rounded-3xl border border-white/5">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Ciel Cognitive Process Tracker:</span>
-                            <span id="cielStatusLabel" class="text-[9px] text-emerald-400 font-bold italic uppercase">Standby</span>
+                    <div class="lg:col-span-2 bg-slate-900/80 p-4 rounded-3xl border border-white/5 flex flex-col space-y-4">
+                        <h4 class="text-[10px] text-sky-400 font-black uppercase">3. SELECT SURGERY PROCEDURE</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-[9px] font-bold">
+                            <button onclick="selectCielProcedure('clone')" id="proc_clone" class="admin-only-ciel p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🌀 Mass Register</button>
+                            <button onclick="selectCielProcedure('inject_live')" id="proc_inject_live" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">⚡ Live Inject</button>
+                            <button onclick="selectCielProcedure('restore')" id="proc_restore" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">⏳ Claim Garansi</button>
+                            <button onclick="selectCielProcedure('erase')" id="proc_erase" class="admin-only-ciel p-3 bg-slate-950 hover:bg-red-950/40 text-red-400 rounded-xl border border-red-500/10 transition-all text-left">💥 Erase Account</button>
+                            <button onclick="selectCielProcedure('decode')" id="proc_decode" class="admin-only-ciel p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">👁️ Decode Profile</button>
+                            <button onclick="selectCielProcedure('transfer_car')" id="proc_transfer_car" class="admin-only-ciel p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🚗 Transfer Car</button>
+                            <button onclick="selectCielProcedure('unlock_printilan')" id="proc_unlock_printilan" class="admin-only-ciel p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🔓 Unlock Printilan</button>
+                            <button onclick="selectCielProcedure('unlock_club')" id="proc_unlock_club" class="admin-only-ciel p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🏆 Unlock All Club</button>
+                            <button onclick="selectCielProcedure('unlock_map')" id="proc_unlock_map" class="admin-only-ciel p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🗺️ Unlock Map</button>
+                            <button onclick="selectCielProcedure('nos')" id="proc_nos" class="admin-only-ciel p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🚀 Unlimited NOS</button>
                         </div>
-                        <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden mb-3">
-                            <div id="cielProgressBar" class="bg-gradient-to-r from-sky-400 to-indigo-500 h-full w-0 transition-all duration-300"></div>
+
+                        <!-- NEW: SAGE SPREADSHEET TEMPLATE SELECTOR CONTAINER -->
+                        <div id="cielTemplateSelectorContainer" class="admin-only-ciel hidden flex flex-col space-y-1 mb-2">
+                            <label class="text-[9px] text-indigo-400 font-black uppercase">💾 SELECT TEMPLATE FROM SAGE SHEET:</label>
+                            <select id="cielTemplateSelect" onchange="applyCielTemplate()" class="w-full p-3 bg-slate-950 text-xs text-white rounded-xl border border-white/5"></select>
                         </div>
-                        <div id="cielLiveConsole" class="bg-black/80 p-3 rounded-2xl h-24 overflow-y-auto text-[9px] font-mono text-emerald-500 space-y-1 custom-scrollbar leading-relaxed">
-                            [System Initialization COMPLETE] - Waiting for instruction.
+
+                        <div id="cielDynamicField" class="hidden flex flex-col space-y-2">
+                            <label id="cielDynamicLabel" class="text-[9px] text-sky-400 font-black uppercase"></label>
+                            <textarea id="cielDynamicArea" placeholder="Enter surgical payload..." class="w-full h-32 p-3 bg-slate-950 text-xs font-mono text-slate-300 rounded-xl border border-white/5 custom-scrollbar"></textarea>
                         </div>
+
+                        <div class="pt-2">
+                            <button id="btnCielExecute" onclick="executeCielSurgicalOperation()" class="w-full btn-rimuru p-4 rounded-2xl font-black text-xs uppercase tracking-widest text-white shadow-xl">INITIATE CIEL OVERWRITE</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress/Log area for Ciel Operations -->
+                <div class="mt-4 p-4 bg-slate-900 rounded-3xl border border-white/5">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Ciel Cognitive Process Tracker:</span>
+                        <span id="cielStatusLabel" class="text-[9px] text-emerald-400 font-bold italic uppercase">Standby</span>
+                    </div>
+                    <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden mb-3">
+                        <div id="cielProgressBar" class="bg-gradient-to-r from-sky-400 to-indigo-500 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                    <div id="cielLiveConsole" class="bg-black/80 p-3 rounded-2xl h-24 overflow-y-auto text-[9px] font-mono text-emerald-500 space-y-1 custom-scrollbar leading-relaxed">
+                        [System Initialization COMPLETE] - Waiting for instruction.
                     </div>
                 </div>
             </div>
@@ -545,7 +591,10 @@ GARANSI SAFEBAN = 1 Bulan
         try {
             const res = await fetch(WEBAPP_URL, { method: "POST", body: JSON.stringify(payload) });
             const data = await res.json();
-            if(data && data.msg === "Session Invalid / Expired!"){ alert("Sesi Berakhir, Silahkan Login Ulang."); localStorage.clear(); location.reload(); return null; }
+            // Bypass error token jika sedang mode Public Warranty
+            if(data && data.msg === "Session Invalid / Expired!" && !payload.isPublicWarranty){ 
+                alert("Sesi Berakhir, Silahkan Login Ulang."); localStorage.clear(); location.reload(); return null; 
+            }
             return data;
         } catch(e) { console.error(e); return {status:"error", msg:"Server tidak merespon."}; }
     }
@@ -557,6 +606,169 @@ GARANSI SAFEBAN = 1 Bulan
 
     function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
     function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
+
+    // --- NEW PUBLIC WARRANTY LOGIC ---
+    function openPublicWarranty() {
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('publicWarrantySection').classList.remove('hidden');
+        loadCielTemplatesPublic();
+    }
+    
+    function closePublicWarranty() {
+        document.getElementById('publicWarrantySection').classList.add('hidden');
+        document.getElementById('loginSection').classList.remove('hidden');
+    }
+
+    async function loadCielTemplatesPublic() {
+        logPublicConsole("Menghubungkan ke server untuk sinkronisasi...");
+        const res = await secureFetch({ action: "ciel_get_templates", isPublicWarranty: true });
+        if (res && res.status !== "error") {
+            cielTemplates.saveprofil = res.saveprofil || [];
+            logPublicConsole(`Sinkronisasi Selesai. Sistem siap.`);
+        } else {
+            logPublicConsole("Gagal sinkronisasi data master. Hubungi Admin.", true);
+        }
+    }
+
+    function logPublicConsole(msg, isError = false) {
+        const consoleEl = document.getElementById('publicCielLiveConsole');
+        const colorClass = isError ? 'text-red-400' : 'text-emerald-400';
+        const timestamp = new Date().toLocaleTimeString();
+        consoleEl.innerHTML += `<p class="${colorClass}">[${timestamp}] ${msg}</p>`;
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+    
+    function setPublicProgress(percent, label = "") {
+        document.getElementById('publicCielProgressBar').style.width = `${percent}%`;
+        if (label) {
+            document.getElementById('publicCielStatusLabel').innerText = label;
+        }
+    }
+
+    async function executePublicWarranty() {
+        const payloadAreaText = document.getElementById('publicWarrantyInput').value;
+        const btn = document.getElementById('btnPublicWarranty');
+        
+        const lines = payloadAreaText.split('\n').filter(l => l.trim() !== "");
+        if (lines.length === 0) {
+            alert("Masukkan data akun Anda!");
+            return;
+        }
+
+        if (!confirm(`Terdapat ${lines.length} akun yang akan di-Claim Garansi. Lanjutkan proses?`)) return;
+
+        btn.innerText = "MEMPROSES KLAIM...";
+        btn.disabled = true;
+
+        let successCount = 0;
+        let failCount = 0;
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line.includes('|')) {
+                logPublicConsole(`[Skip] Format salah (Gunakan email|pass): ${line}`, true);
+                failCount++;
+                continue;
+            }
+
+            const [cEmail, cPass] = line.split('|');
+            const targetEmail = cEmail.trim();
+            const targetPass = cPass.trim();
+
+            setPublicProgress(((i) / lines.length) * 100, `PROSES ${i+1}/${lines.length}`);
+            logPublicConsole(`-----------------------------------------`);
+            logPublicConsole(`[${i+1}/${lines.length}] Mengecek Garansi: ${targetEmail}`);
+
+            // VALIDASI KE ARCHIVE
+            const validRes = await secureFetch({ action: "ciel_validate_garansi", email: targetEmail, pass: targetPass, isPublicWarranty: true });
+            
+            if (!validRes || validRes.status === "error") {
+                logPublicConsole(`[Ditolak] ${targetEmail}: ${validRes ? validRes.msg : "Gagal Validasi"}`, true);
+                failCount++;
+                continue;
+            }
+
+            const paketType = validRes.paket;
+            logPublicConsole(`Garansi Valid: [${paketType}]. Mencari data Master...`);
+
+            const sourceTemplate = cielTemplates.saveprofil.find(t => t.name.toLowerCase() === paketType.toLowerCase());
+            if (!sourceTemplate) {
+                logPublicConsole(`[Gagal] Sistem belum memiliki data master untuk ${paketType}. Hubungi Admin!`, true);
+                failCount++;
+                continue;
+            }
+
+            const [sourceEmail, sourcePass] = sourceTemplate.data.split("|");
+
+            // DELETE AKUN BANNED
+            logPublicConsole(`Menghapus jejak akun lama dari server...`);
+            const delLoginRes = await secureFetch({ action: "ciel_authenticate", email: targetEmail, pass: targetPass, isPublicWarranty: true });
+            if (delLoginRes && delLoginRes.d && delLoginRes.d.token) {
+                await secureFetch({ action: "ciel_delete_account", cielToken: delLoginRes.d.token, email: targetEmail, pass: targetPass, isPublicWarranty: true });
+            }
+
+            // REGISTER ULANG (REBIRTH)
+            logPublicConsole(`Meregenerasi (Rebirth) identitas akun...`);
+            const regRes = await secureFetch({ action: "ciel_register_account", email: targetEmail, pass: targetPass, isPublicWarranty: true });
+            if (!regRes || !regRes.d || !regRes.d.token) {
+                logPublicConsole(`[Gagal] Rebirth akun ${targetEmail} gagal.`, true);
+                failCount++;
+                continue;
+            }
+            const targetToken = regRes.d.token;
+            const realNick = regRes.d.carxId || targetEmail.split('@')[0];
+
+            // PULL MASTER
+            logPublicConsole(`Menarik profil (Skill) dari Master...`);
+            const sourceAuth = await secureFetch({ action: "ciel_authenticate", email: sourceEmail.trim(), pass: sourcePass.trim(), isPublicWarranty: true });
+            if(!sourceAuth || !sourceAuth.d || !sourceAuth.d.token) {
+                logPublicConsole(`[Gagal] Master Auth gagal. Server maintenance.`, true);
+                failCount++;
+                continue;
+            }
+            const profRes = await secureFetch({ action: "ciel_get_profile", cielToken: sourceAuth.d.token, isPublicWarranty: true });
+            if (!profRes || profRes.status === "error" || !profRes.profile) {
+                logPublicConsole(`[Gagal] Gagal menarik Skill Master.`, true);
+                failCount++;
+                continue;
+            }
+
+            let profile = profRes.profile;
+            let header = profRes.header || "";
+            profile.nickname = realNick;
+            profile.last_save_time = Math.floor(Date.now() / 1000);
+
+            // PUSH TO TARGET
+            logPublicConsole(`Menyuntikkan Skill ke akun Anda...`);
+            const pushRes = await secureFetch({
+                action: "ciel_push_profile",
+                cielToken: targetToken,
+                profile: profile,
+                header: header,
+                email: targetEmail,
+                paket: paketType,
+                isWarranty: true,
+                isPublicWarranty: true
+            });
+
+            if (pushRes && (pushRes.status === 200 || pushRes.status === 201 || pushRes.d)) {
+                logPublicConsole(`[✅ BERHASIL] Akun ${targetEmail} berhasil dipulihkan!`);
+                successCount++;
+            } else {
+                logPublicConsole(`[Gagal] Injeksi profil ke ${targetEmail} gagal.`, true);
+                failCount++;
+            }
+        }
+        
+        setPublicProgress(100, "SELESAI");
+        logPublicConsole(`\n========== [ 🛡️ PROSES GARANSI SELESAI ] ==========`);
+        logPublicConsole(`Sukses: ${successCount} Akun | Gagal: ${failCount} Akun`);
+        alert(`Klaim Garansi Selesai!\n✅ Berhasil: ${successCount}\n❌ Gagal: ${failCount}`);
+        
+        btn.innerText = "EKSEKUSI CLAIM GARANSI";
+        btn.disabled = false;
+    }
+    // --- END PUBLIC WARRANTY LOGIC ---
 
     function copyPriceList() {
         const content = document.getElementById("priceContent").innerText;
@@ -587,15 +799,22 @@ GARANSI SAFEBAN = 1 Bulan
         document.getElementById('appSection').classList.remove('hidden');
         document.getElementById('userStatusTag').innerText = "Monster Class : " + currentUser;
         updateStockUI(); loadHistory(); updateUserStats();
+        
+        document.getElementById('cielSurgicalConsole').classList.remove('hidden');
+
         if(role === "admin"){ 
             document.getElementById('adminPanel').classList.remove('hidden'); 
             document.getElementById('btnGen').disabled = false; 
             fetchAdminStats(); 
             loadCielTemplates(); // Load cloud templates from Sheet
+            document.querySelectorAll('.admin-only-ciel').forEach(el => el.classList.remove('hidden'));
         } else { 
             document.getElementById('adminPanel').classList.add('hidden'); 
             document.getElementById('btnGen').disabled = true; 
             fetchGlobalHistory();
+            loadCielTemplates(); // Citizens juga membutuhkan data saveprofil untuk fitur Claim Garansi
+            document.querySelectorAll('.admin-only-ciel').forEach(el => el.classList.add('hidden'));
+            selectCielProcedure('inject_live');
         }
     }
 
@@ -807,7 +1026,7 @@ GARANSI SAFEBAN = 1 Bulan
     };
 
     // =========================================================================
-    // --- INTEGRATED CIEL SURGICAL ENGINE (FRONTEND LOGIC) ---
+    // --- INTEGRATED CIEL SURGICAL ENGINE (FRONTEND LOGIC V11.8 ULTIMATE) ---
     // =========================================================================
     
     let selectedCielProcedureId = "";
@@ -828,24 +1047,15 @@ GARANSI SAFEBAN = 1 Bulan
     }
 
     function cleanAndParseJSON(rawInput) {
-        // Pembersihan karakter tak terlihat, UTF-8 BOM, spasi ekstra, dan regex trail commas dari CLI Node
         let cleaned = rawInput.trim();
-        if (cleaned.charCodeAt(0) === 0xFEFF) {
-            cleaned = cleaned.slice(1);
-        }
-        if (!cleaned.startsWith('{') && !cleaned.startsWith('[')) {
-            cleaned = '{' + cleaned + '}';
-        }
-        cleaned = cleaned
-            .replace(/,(\s*[\]}])/g, '$1') 
-            .replace(/[\u200B-\u200D\uFEFF]/g, ""); 
+        if (cleaned.charCodeAt(0) === 0xFEFF) { cleaned = cleaned.slice(1); }
+        if (!cleaned.startsWith('{') && !cleaned.startsWith('[')) { cleaned = '{' + cleaned + '}'; }
+        cleaned = cleaned.replace(/,(\s*[\]}])/g, '$1').replace(/[\u200B-\u200D\uFEFF]/g, ""); 
         return JSON.parse(cleaned);
     }
 
-    // New Helper functions for random sampling from Node CLI
     function getRandomSample(arr, n) {
-        let result = [];
-        let copy = [...arr];
+        let result = []; let copy = [...arr];
         for (let i = 0; i < n; i++) {
             let idx = Math.floor(Math.random() * copy.length);
             result.push(copy[idx]);
@@ -854,7 +1064,6 @@ GARANSI SAFEBAN = 1 Bulan
         return result;
     }
 
-    // Generator logic to fully mimic tempest_register.js CLI
     function generateCielRandomUsername() {
         const chosen = getRandomSample(FRAGMENTS, 2);
         let username = chosen.join("");
@@ -862,7 +1071,6 @@ GARANSI SAFEBAN = 1 Bulan
         return `${username.toLowerCase()}@f5.si`;
     }
 
-    // NEW LOGIC: Fetch and load all memory templates directly from Apps Script Sheet
     async function loadCielTemplates() {
         logCielConsole("Memanggil template memori dari Spreadsheet...");
         const res = await secureFetch({ action: "ciel_get_templates" });
@@ -878,14 +1086,13 @@ GARANSI SAFEBAN = 1 Bulan
         }
     }
 
-    // NEW LOGIC: Update dropdown view based on selected procedure
     function updateTemplateDropdown() {
         const select = document.getElementById('cielTemplateSelect');
         const container = document.getElementById('cielTemplateSelectorContainer');
         if (!select || !container) return;
         
         let list = [];
-        if (selectedCielProcedureId === "mass" || selectedCielProcedureId === "restore") {
+        if (selectedCielProcedureId === "clone") {
             list = cielTemplates.saveprofil;
         } else if (selectedCielProcedureId === "transfer_car") {
             list = cielTemplates.car;
@@ -904,10 +1111,9 @@ GARANSI SAFEBAN = 1 Bulan
         }
     }
 
-    // NEW LOGIC: Apply template selected from dropdown into Ciel Dynamic Textarea Area
     function applyCielTemplate() {
         const select = document.getElementById('cielTemplateSelect');
-        if (select && select.value) {
+        if (select && select.value && selectedCielProcedureId !== "clone") {
             document.getElementById('cielDynamicArea').value = decodeURIComponent(select.value);
             logCielConsole(`Template kustom berhasil diterapkan ke panel.`);
         }
@@ -916,7 +1122,6 @@ GARANSI SAFEBAN = 1 Bulan
     function selectCielProcedure(procedureId) {
         selectedCielProcedureId = procedureId;
         
-        // Visual Active Button highlight
         const btns = document.querySelectorAll('[id^="proc_"]');
         btns.forEach(btn => {
             btn.classList.remove('bg-sky-600/30', 'border-sky-400/40', 'text-white');
@@ -933,27 +1138,30 @@ GARANSI SAFEBAN = 1 Bulan
         const dynamicLabel = document.getElementById('cielDynamicLabel');
         const dynamicArea = document.getElementById('cielDynamicArea');
         const massControl = document.getElementById('cielMassControl');
+        const identityControl = document.getElementById('cielIdentityControl');
+        const customResourceControl = document.getElementById('cielCustomResourceControl');
         
-        // Tampilkan input Mass Loop Target Count jika memilih prosedur mass register
-        if (procedureId === "mass") {
+        // Atur Tampilan Input Target Identity (Sembunyikan untuk Massal)
+        if (procedureId === "clone" || procedureId === "restore") {
+            identityControl.classList.add('hidden');
+            customResourceControl.classList.add('hidden');
+        } else {
+            identityControl.classList.remove('hidden');
+            customResourceControl.classList.remove('hidden');
+        }
+
+        // Tampilkan input Mass Loop Target Count
+        if (procedureId === "clone") {
             massControl.classList.remove('hidden');
         } else {
             massControl.classList.add('hidden');
         }
         
-        // Dynamic loading templates selection trigger
         updateTemplateDropdown();
         
-        // Logic for input fields based on dynamic requirements
-        if (["mass", "restore", "transfer_car", "unlock_printilan", "unlock_club", "nos"].includes(procedureId)) {
+        if (["transfer_car", "unlock_printilan", "unlock_club", "nos"].includes(procedureId)) {
             dynamicField.classList.remove('hidden');
-            if (procedureId === "mass") {
-                dynamicLabel.innerText = "Master Soul Profile JSON (Compressed or raw JSON):";
-                dynamicArea.placeholder = `{\n  "nickname": "Test",\n  "resources": {\n    "soft": { "amount": 100000 },\n    "hard": { "amount": 1000 }\n  }\n}`;
-            } else if (procedureId === "restore") {
-                dynamicLabel.innerText = "Rebirth Soul Base Profile JSON Data:";
-                dynamicArea.placeholder = "Pasted Base compressed_data profile here...";
-            } else if (procedureId === "transfer_car") {
+            if (procedureId === "transfer_car") {
                 dynamicLabel.innerText = "Car Configuration Object JSON Data (Single Car):";
                 dynamicArea.placeholder = `{\n  "car_id": "car_m3_e30",\n  "color": "#ff0000",\n  "nitro": { "amount": 9999999, "max_amount": 9999999 }\n}`;
             } else if (procedureId === "unlock_printilan") {
@@ -970,6 +1178,13 @@ GARANSI SAFEBAN = 1 Bulan
             dynamicField.classList.remove('hidden');
             dynamicLabel.innerText = "Unlock Map Key Config Type ('mountain' or 'allmap'):";
             dynamicArea.placeholder = "allmap";
+        } else if (procedureId === "restore") {
+            dynamicField.classList.remove('hidden');
+            dynamicLabel.innerText = "List Akun Banned (Format: email|pass per baris):";
+            dynamicArea.placeholder = "akun1@f5.si|11223344\nakun2@f5.si|11223344\nakun3@f5.si|11223344";
+        } else if (procedureId === "clone") {
+            dynamicField.classList.add('hidden');
+            dynamicArea.placeholder = "";
         } else {
             dynamicField.classList.add('hidden');
         }
@@ -979,6 +1194,13 @@ GARANSI SAFEBAN = 1 Bulan
     
     async function executeCielSurgicalOperation() {
         if (!selectedCielProcedureId) return alert("Pilih prosedur pembedahan terlebih dahulu!");
+
+        if (currentRole !== "admin" && !base64Img) {
+            // Bypass syarat foto khusus untuk Claim Garansi ("restore")
+            if (selectedCielProcedureId !== "restore") {
+                return alert("Wajib Upload Bukti Transfer sebelum melakukan prosedur ini!");
+            }
+        }
         
         const email = document.getElementById('ciel_email').value;
         const pass = document.getElementById('ciel_pass').value;
@@ -987,15 +1209,13 @@ GARANSI SAFEBAN = 1 Bulan
         const exp = parseInt(document.getElementById('ciel_exp').value) || null;
         const payloadAreaText = document.getElementById('cielDynamicArea').value;
         
-        // Membaca loop count mass register (default 1 jika bukan mass reg atau input salah)
+        // Loop count untuk Mass Register (Clone)
         const massCountInput = document.getElementById('ciel_mass_count');
-        const massLoopCount = (selectedCielProcedureId === "mass" && massCountInput) ? (parseInt(massCountInput.value) || 1) : 1;
+        const massLoopCount = (selectedCielProcedureId === "clone" && massCountInput) ? (parseInt(massCountInput.value) || 1) : 1;
         
-        if (selectedCielProcedureId !== "mass" && selectedCielProcedureId !== "clone" && (!email || !pass)) {
+        // Pengecekan input otentikasi hanya jika prosedur BUKAN yang bersifat massal (restore/clone)
+        if (selectedCielProcedureId !== "restore" && selectedCielProcedureId !== "clone" && (!email || !pass)) {
             return alert("Email dan Password target wajib diisi untuk otentikasi soul corridor!");
-        }
-        if (selectedCielProcedureId === "clone" && (!email || !pass)) {
-            return alert("Email dan Password SOURCE wajib diisi untuk melakukan kloning!");
         }
         
         const btn = document.getElementById('btnCielExecute');
@@ -1004,195 +1224,220 @@ GARANSI SAFEBAN = 1 Bulan
         
         try {
             // =========================================================================
-            // --- NEW: CLONE ACCOUNT SAGE SURGICAL SYSTEM (MATCHING CLI WORKFLOW) ---
+            // --- NEW: BULK CLAIM GARANSI (RESTORE) SYSTEM ---
             // =========================================================================
-            if (selectedCielProcedureId === "clone") {
-                setCielProgress(10, "AUTHENTICATING SOURCE");
-                logCielConsole(`Menghubungkan ke koridor source: ${email}...`);
-                
-                // 1. Authenticate Source
-                const authSource = await secureFetch({
-                    action: "ciel_authenticate",
-                    email: email,
-                    pass: pass
-                });
-                if (!authSource || !authSource.d || !authSource.d.token) {
-                    setCielProgress(0, "FAILED");
-                    logCielConsole(`Gagal otentikasi source account: ${JSON.stringify(authSource)}`, true);
-                    return;
+            if (selectedCielProcedureId === "restore") {
+                const lines = payloadAreaText.split('\n').filter(l => l.trim() !== "");
+                if (lines.length === 0) {
+                    alert("Masukkan list akun yang dibanned pada kolom yang tersedia!");
+                    btn.innerText = "INITIATE CIEL OVERWRITE"; btn.disabled = false; return;
                 }
-                const sourceToken = authSource.d.token;
-                logCielConsole(`Koneksi Source Berhasil! Token secured.`);
-                
-                // 2. Fetch Source Profile
-                setCielProgress(30, "EXTRACTING SOURCE");
-                logCielConsole(`Mengambil profil dari Source...`);
-                const sourceProfileRes = await secureFetch({
-                    action: "ciel_get_profile",
-                    cielToken: sourceToken
-                });
-                if (!sourceProfileRes || sourceProfileRes.status === "error" || !sourceProfileRes.profile) {
-                    setCielProgress(0, "FAILED");
-                    logCielConsole(`Gagal mengambil profil source: ${sourceProfileRes ? sourceProfileRes.msg : 'Unknown error'}`, true);
-                    return;
+
+                if (!confirm(`Terdapat ${lines.length} akun yang akan di-scan dan di-Claim Garansi. Lanjutkan proses massal?`)) {
+                    btn.innerText = "INITIATE CIEL OVERWRITE"; btn.disabled = false; return;
                 }
-                let rawPayload = sourceProfileRes.profile;
-                let header = sourceProfileRes.header || "";
-                logCielConsole(`Profil Source berhasil diambil! Owner: ${rawPayload.nickname || 'Unknown'}`);
-                
-                // 3. Generate Target Username
-                setCielProgress(50, "GENERATING TARGET ID");
-                const randomEmail = generateCielRandomUsername();
-                const targetPass = "11223344"; // standard target pass dari CLI
-                logCielConsole(`Mempersiapkan identitas target baru: ${randomEmail}`);
-                
-                // 4. Register Target Random Account
-                setCielProgress(65, "REGISTERING TARGET");
-                const regTarget = await secureFetch({
-                    action: "ciel_register_account",
-                    email: randomEmail,
-                    pass: targetPass
-                });
-                if (!regTarget || !regTarget.d || !regTarget.d.token) {
-                    setCielProgress(0, "FAILED");
-                    logCielConsole(`Registrasi target gagal: ${JSON.stringify(regTarget)}`, true);
-                    return;
-                }
-                const targetToken = regTarget.d.token;
-                const realNick = regTarget.d.carxId || randomEmail.split('@')[0];
-                logCielConsole(`Registrasi target sukses! Nickname: ${realNick}`);
-                
-                // 5. Rewrite target Soul Identity
-                setCielProgress(80, "CLONING SOUL");
-                logCielConsole(`Menulis ulang struktur data jiwa (Cloning)...`);
-                rawPayload.nickname = realNick;
-                if (silver !== null) rawPayload.resources.soft.amount = silver;
-                if (gold !== null) rawPayload.resources.hard = { amount: gold };
-                if (exp !== null) rawPayload.resources.experience = { amount: exp };
-                rawPayload.last_save_time = Math.floor(Date.now() / 1000);
-                
-                // 6. Push cloned profile to Target Cloud Account
-                setCielProgress(90, "SYNCHRONIZING");
-                logCielConsole(`Mengunggah data kloning ke cloud target...`);
-                const pushTarget = await secureFetch({
-                    action: "ciel_push_profile",
-                    cielToken: targetToken,
-                    profile: rawPayload,
-                    header: header
-                });
-                if (pushTarget && (pushTarget.status === 200 || pushTarget.status === 201 || pushTarget.d)) {
-                    setCielProgress(100, "COMPLETE");
-                    logCielConsole(`[✨ CLONE SUCCESS] Akun ${randomEmail} berhasil di-clone & di-inject sempurna!`);
+
+                let successCount = 0;
+                let failCount = 0;
+
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line.includes('|')) {
+                        logCielConsole(`[Skip] Format salah pada baris: ${line}`, true);
+                        failCount++;
+                        continue;
+                    }
+
+                    const [cEmail, cPass] = line.split('|');
+                    const targetEmail = cEmail.trim();
+                    const targetPass = cPass.trim();
+
+                    setCielProgress(((i) / lines.length) * 100, `WARRANTY ${i+1}/${lines.length}`);
+                    logCielConsole(`-----------------------------------------`);
+                    logCielConsole(`[${i+1}/${lines.length}] Mengeksekusi Claim Garansi: ${targetEmail}`);
+
+                    const validRes = await secureFetch({ action: "ciel_validate_garansi", email: targetEmail, pass: targetPass });
                     
-                    // Show result in the console / text area
-                    document.getElementById('cielDynamicField').classList.remove('hidden');
-                    document.getElementById('cielDynamicLabel').innerText = "CLONE RESULT CREDENTIALS:";
-                    document.getElementById('cielDynamicArea').value = `${randomEmail}|${targetPass}`;
-                    
-                    alert(`Clone Selesai!\nAkun Baru: ${randomEmail}\nPassword: ${targetPass}\nNickname: ${realNick}`);
-                } else {
-                    setCielProgress(0, "FAILED");
-                    logCielConsole(`Gagal sinkronisasi data kloning ke cloud target: ${JSON.stringify(pushTarget)}`, true);
+                    if (!validRes || validRes.status === "error") {
+                        logCielConsole(`[Ditolak] ${targetEmail}: ${validRes ? validRes.msg : "Gagal Validasi"}`, true);
+                        failCount++;
+                        continue;
+                    }
+
+                    const paketType = validRes.paket;
+                    logCielConsole(`Garansi Valid: [${paketType}]. Waktu OK. Mencari Master Data...`);
+
+                    const sourceTemplate = cielTemplates.saveprofil.find(t => t.name.toLowerCase() === paketType.toLowerCase());
+                    if (!sourceTemplate) {
+                        logCielConsole(`[Gagal] Template Master untuk paket ${paketType} tidak ada di saveprofil!`, true);
+                        failCount++;
+                        continue;
+                    }
+
+                    const [sourceEmail, sourcePass] = sourceTemplate.data.split("|");
+
+                    logCielConsole(`Menghapus akun banned dari server...`);
+                    const delLoginRes = await secureFetch({ action: "ciel_authenticate", email: targetEmail, pass: targetPass });
+                    if (delLoginRes && delLoginRes.d && delLoginRes.d.token) {
+                        await secureFetch({ action: "ciel_delete_account", cielToken: delLoginRes.d.token, email: targetEmail, pass: targetPass });
+                    }
+
+                    logCielConsole(`Meregenerasi (Rebirth) akun...`);
+                    const regRes = await secureFetch({ action: "ciel_register_account", email: targetEmail, pass: targetPass });
+                    if (!regRes || !regRes.d || !regRes.d.token) {
+                        logCielConsole(`[Gagal] Rebirth akun ${targetEmail} gagal.`, true);
+                        failCount++;
+                        continue;
+                    }
+                    const targetToken = regRes.d.token;
+                    const realNick = regRes.d.carxId || targetEmail.split('@')[0];
+
+                    logCielConsole(`Menarik profil dari Master ${paketType}...`);
+                    const sourceAuth = await secureFetch({ action: "ciel_authenticate", email: sourceEmail.trim(), pass: sourcePass.trim() });
+                    if(!sourceAuth || !sourceAuth.d || !sourceAuth.d.token) {
+                        logCielConsole(`[Gagal] Master Auth gagal. Cek saveprofil.`, true);
+                        failCount++;
+                        continue;
+                    }
+                    const profRes = await secureFetch({ action: "ciel_get_profile", cielToken: sourceAuth.d.token });
+                    if (!profRes || profRes.status === "error" || !profRes.profile) {
+                        logCielConsole(`[Gagal] Tarik profil Master gagal.`, true);
+                        failCount++;
+                        continue;
+                    }
+
+                    let profile = profRes.profile;
+                    let header = profRes.header || "";
+
+                    profile.nickname = realNick;
+                    profile.last_save_time = Math.floor(Date.now() / 1000);
+
+                    logCielConsole(`Menyuntikkan struktur memori baru ke target...`);
+                    const pushRes = await secureFetch({
+                        action: "ciel_push_profile",
+                        cielToken: targetToken,
+                        profile: profile,
+                        header: header,
+                        email: targetEmail,
+                        paket: paketType,
+                        isWarranty: true
+                    });
+
+                    if (pushRes && (pushRes.status === 200 || pushRes.status === 201 || pushRes.d)) {
+                        logCielConsole(`[✅ BERHASIL] Akun ${targetEmail} direstorasi dengan sempurna!`);
+                        successCount++;
+                    } else {
+                        logCielConsole(`[Gagal] Injeksi profil ke ${targetEmail} gagal.`, true);
+                        failCount++;
+                    }
                 }
+                
+                setCielProgress(100, "CLAIM BATCH DONE");
+                logCielConsole(`\n========== [ 🛡️ BATCH CLAIM GARANSI SELESAI ] ==========`);
+                logCielConsole(`Sukses Restorasi: ${successCount} Akun | Ditolak/Gagal: ${failCount} Akun`);
+                alert(`Proses Claim Garansi Selesai!\n✅ Sukses: ${successCount}\n❌ Ditolak/Gagal: ${failCount}`);
+                
+                if (currentRole !== "admin") {
+                    base64Img = ""; document.getElementById('bukti').value = ""; document.getElementById('btnGen').disabled = true;
+                }
+
                 btn.innerText = "INITIATE CIEL OVERWRITE";
                 btn.disabled = false;
                 return;
             }
 
             // =========================================================================
-            // --- NEW: MASS REGISTER MULTI-ACCOUNT SAGE LOOP SYSTEM ---
+            // --- NEW: MASS REGISTER (EKS-CLONE) SYSTEM VIA TEMPLATE ---
             // =========================================================================
-            if (selectedCielProcedureId === "mass") {
-                setCielProgress(5, "INITIALIZING MASS REG");
-                logCielConsole(`Memulai Mass Register Loop sebanyak: [ ${massLoopCount} Akun ]...`);
-                
-                let successAccounts = [];
-                const targetPass = pass || "11223344"; // default pass dari script CLI
-                
-                for (let idx = 0; idx < massLoopCount; idx++) {
-                    const stepProgress = Math.floor((idx / massLoopCount) * 90) + 5;
-                    setCielProgress(stepProgress, `MASS REGISTERING ${idx + 1}/${massLoopCount}`);
-                    
-                    // 1. Generate Random Username ala CLI
-                    const targetEmail = generateCielRandomUsername();
-                    logCielConsole(`[Akun ${idx + 1}/${massLoopCount}] Mendaftarkan: ${targetEmail}`);
-                    
-                    // 2. Register ke CarX Server
-                    const regRes = await secureFetch({
-                        action: "ciel_register_account",
-                        email: targetEmail,
-                        pass: targetPass
-                    });
-                    
-                    if (!regRes || !regRes.d || !regRes.d.token) {
-                        logCielConsole(`[!] Gagal mendaftarkan ${targetEmail}: ${JSON.stringify(regRes)}`, true);
-                        continue;
-                    }
-                    
-                    const token = regRes.d.token;
-                    const realNick = regRes.d.carxId || targetEmail.split('@')[0];
-                    logCielConsole(`[✔] Registrasi Sukses! Nickname: ${realNick}. Mempersiapkan Core Memory...`);
-                    
-                    // 3. Dekompresi Profile Master & Penjagaan Header Magic Bytes agar tidak stuck loading screen!
-                    let finalProfile = null;
-                    let fileHeader = "";
-                    
-                    try {
-                        let parsedInput = cleanAndParseJSON(payloadAreaText);
-                        let sourcePayload = parsedInput.compressed_data || payloadAreaText;
-                        
-                        // Ekstrak Gzip biner dan header biner asli menggunakan GAS
-                        const decRes = await secureFetch({
-                            action: "ciel_get_profile",
-                            cielToken: "dummy",
-                            forceRaw: sourcePayload
-                        });
-                        
-                        if (decRes && decRes.status === "success" && decRes.profile) {
-                            finalProfile = decRes.profile;
-                            fileHeader = decRes.header || "";
-                        } else {
-                            logCielConsole("[!] Data master gagal didekompresi biner. Memaksakan parse JSON mentah...", true);
-                            finalProfile = parsedInput;
-                        }
-                    } catch (err) {
-                        logCielConsole(`[!] Error parsing Master Soul JSON: ${err.message}`, true);
-                        break;
-                    }
-                    
-                    // 4. Modifikasi Magicules
-                    finalProfile.nickname = realNick;
-                    if (silver !== null) finalProfile.resources.soft.amount = silver;
-                    if (gold !== null) finalProfile.resources.hard = { amount: gold };
-                    if (exp !== null) finalProfile.resources.experience = { amount: exp };
-                    finalProfile.last_save_time = Math.floor(Date.now() / 1000);
-                    
-                    // 5. Enkripsi Gzip + Header Biner & Push ke Cloud Profile CarX
-                    logCielConsole(`[⚙️] Menyatukan Header Magic Bytes dengan Gzip untuk ${realNick}...`);
-                    const pushRes = await secureFetch({
-                        action: "ciel_push_profile",
-                        cielToken: token,
-                        profile: finalProfile,
-                        header: fileHeader
-                    });
-                    
-                    if (pushRes && (pushRes.status === 200 || pushRes.status === 201 || pushRes.d)) {
-                        logCielConsole(`[✨ SUCCESS] Akun ${targetEmail} berhasil dibuat & di-inject sempurna!`);
-                        successAccounts.push(`${targetEmail}|${targetPass}`);
-                    } else {
-                        logCielConsole(`[!] Gagal sinkronisasi data cloud untuk ${targetEmail}: ${JSON.stringify(pushRes)}`, true);
-                    }
-                    
-                    // Delay jeda/cooling-down antar register demi bypass holy-field anti-spam
-                    await new Promise(resolve => setTimeout(resolve, 2000));
+            if (selectedCielProcedureId === "clone") {
+                const select = document.getElementById('cielTemplateSelect');
+                if (!select || !select.value) {
+                    alert("Pilih template master dari saveprofil terlebih dahulu!");
+                    btn.innerText = "INITIATE CIEL OVERWRITE"; btn.disabled = false; return;
                 }
                 
-                setCielProgress(100, "COMPLETE");
-                logCielConsole(`\n--- [ 🌀 CIEL MASS REGISTER PROCESS FINISHED ] ---`);
-                logCielConsole(`Total Akun Terbuka Sukses: ${successAccounts.length} Akun.`);
+                const templateData = decodeURIComponent(select.value);
+                const [sourceEmail, sourcePass] = templateData.split('|');
+                if(!sourceEmail || !sourcePass) {
+                    alert("Format template rusak! (Harus email|pass)");
+                    btn.innerText = "INITIATE CIEL OVERWRITE"; btn.disabled = false; return;
+                }
+
+                setCielProgress(5, "AUTH MASTER TEMPLATE");
+                logCielConsole(`Menghubungkan ke master: ${sourceEmail}...`);
                 
+                const authSource = await secureFetch({ action: "ciel_authenticate", email: sourceEmail.trim(), pass: sourcePass.trim() });
+                if (!authSource || !authSource.d || !authSource.d.token) {
+                    setCielProgress(0, "FAILED");
+                    logCielConsole(`Gagal otentikasi master. Periksa kredensial saveprofil!`, true);
+                    btn.innerText = "INITIATE CIEL OVERWRITE"; btn.disabled = false; return;
+                }
+                const sourceToken = authSource.d.token;
+                
+                setCielProgress(15, "EXTRACTING MASTER PROFILE");
+                logCielConsole(`Mengambil profil dari Master DB...`);
+                const sourceProfileRes = await secureFetch({ action: "ciel_get_profile", cielToken: sourceToken });
+                if (!sourceProfileRes || sourceProfileRes.status === "error" || !sourceProfileRes.profile) {
+                    setCielProgress(0, "FAILED");
+                    logCielConsole(`Gagal mengambil profil master.`, true);
+                    btn.innerText = "INITIATE CIEL OVERWRITE"; btn.disabled = false; return;
+                }
+                
+                let masterPayload = sourceProfileRes.profile;
+                let header = sourceProfileRes.header || "";
+                logCielConsole(`Profil Master berhasil diambil! Owner: ${masterPayload.nickname || 'Unknown'}`);
+                
+                let successAccounts = [];
+                const targetPass = "11223344";
+
+                logCielConsole(`Memulai Looping Mass Register sebanyak: [ ${massLoopCount} Akun ]...`);
+
+                for (let idx = 0; idx < massLoopCount; idx++) {
+                    const stepProgress = Math.floor((idx / massLoopCount) * 80) + 15;
+                    setCielProgress(stepProgress, `MASS REGISTERING ${idx + 1}/${massLoopCount}`);
+
+                    const randomEmail = generateCielRandomUsername();
+                    logCielConsole(`[Akun ${idx + 1}/${massLoopCount}] Target: ${randomEmail}`);
+                    
+                    const regTarget = await secureFetch({
+                        action: "ciel_register_account", email: randomEmail, pass: targetPass
+                    });
+                    if (!regTarget || !regTarget.d || !regTarget.d.token) {
+                        logCielConsole(`[!] Registrasi target gagal. Lewati...`, true);
+                        continue;
+                    }
+                    const targetToken = regTarget.d.token;
+                    const realNick = regTarget.d.carxId || randomEmail.split('@')[0];
+                    
+                    let rawPayload = JSON.parse(JSON.stringify(masterPayload));
+                    rawPayload.nickname = realNick;
+                    rawPayload.last_save_time = Math.floor(Date.now() / 1000);
+                    
+                    const pushTarget = await secureFetch({
+                        action: "ciel_push_profile",
+                        cielToken: targetToken,
+                        profile: rawPayload,
+                        header: header,
+                        image: base64Img,
+                        email: randomEmail
+                    });
+
+                    if (pushTarget && (pushTarget.status === 200 || pushTarget.status === 201 || pushTarget.d)) {
+                        logCielConsole(`[✨ BERHASIL] Akun ${randomEmail} tercipta sempurna!`);
+                        successAccounts.push(`${randomEmail}|${targetPass}`);
+                    } else {
+                        logCielConsole(`[!] Gagal sinkronisasi data cloud untuk ${randomEmail}`, true);
+                    }
+
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
+
+                setCielProgress(100, "COMPLETE");
+                logCielConsole(`\n========== [ 🌀 CIEL MASS REGISTER SELESAI ] ==========`);
+                logCielConsole(`Total Akun Dibuat: ${successAccounts.length} Akun.`);
+
                 if (successAccounts.length > 0) {
-                    alert(`Mass Register Selesai! ${successAccounts.length} akun berhasil di-inject tanpa stuck loading screen.`);
+                    alert(`Mass Register Selesai! ${successAccounts.length} akun berhasil di-inject dari Template.`);
                     document.getElementById('cielDynamicField').classList.remove('hidden');
                     document.getElementById('cielDynamicLabel').innerText = "MASS REGISTER RESULT ACC LIST:";
                     document.getElementById('cielDynamicArea').value = successAccounts.join("\n");
@@ -1201,118 +1446,63 @@ GARANSI SAFEBAN = 1 Bulan
                 btn.disabled = false;
                 return;
             }
-            
+
             // =========================================================================
-            // --- REGULAR SINGLE PROCEDURES (CLONE, INJECT LIVE, NOS, MAP, ETC.) ---
+            // --- ERASE ACCOUNT (PREDATOR MODE - SURGICAL DELETION ONLY) ---
             // =========================================================================
-            setCielProgress(10, "AUTHENTICATING");
-            logCielConsole(`Connecting to CarX gateway for: ${email}...`);
-            
-            // --- TIME REGRESSION REBIRTH SPECIAL HANDLING (Menu 05 & Menu 06) ---
-            if (selectedCielProcedureId === "restore" || selectedCielProcedureId === "erase") {
+            if (selectedCielProcedureId === "erase") {
                 setCielProgress(20, "ERASING TARGET");
-                logCielConsole("Sending erase/deletion signal to Target Corridor...");
-                
-                // Ciel Login Pre-Auth Deletion
-                const delLoginRes = await secureFetch({
-                    action: "ciel_authenticate",
-                    email: email,
-                    pass: pass
-                });
+                logCielConsole("Mengirim sinyal penghapusan ke server (Predator Mode)...");
+
+                const delLoginRes = await secureFetch({ action: "ciel_authenticate", email: email, pass: pass });
 
                 if (delLoginRes && delLoginRes.d && delLoginRes.d.token) {
                     const delToken = delLoginRes.d.token;
                     await secureFetch({
-                        action: "ciel_delete_account",
-                        cielToken: delToken,
-                        email: email,
-                        pass: pass
+                        action: "ciel_delete_account", cielToken: delToken, email: email, pass: pass
                     });
                     logCielConsole("Target soul core deleted from Cloud successfully.");
-                } else {
-                    logCielConsole("Deletion auth failed or user not exist. Forcing Rebirth registration...", true);
-                }
-                
-                if (selectedCielProcedureId === "erase") {
                     setCielProgress(100, "ERASE COMPLETE");
-                    logCielConsole(`[VOID GOD TURN NULL] Account presence completely eliminated.`);
+                    logCielConsole(`[VOID GOD TURN NULL] Keberadaan akun terhapus sepenuhnya dari dimensi.`);
                     alert("Akun target berhasil dihapus secara permanen dari server!");
-                    btn.innerText = "INITIATE CIEL OVERWRITE";
-                    btn.disabled = false;
-                    return;
+                } else {
+                    logCielConsole("Gagal login atau akun tidak ditemukan. Penghapusan dibatalkan.", true);
+                    setCielProgress(0, "ERASE FAILED");
                 }
                 
-                // Register a fresh reborn soul
-                setCielProgress(35, "INITIATING REBIRTH");
-                logCielConsole("Executing registration rebirth for newborn target...");
-                const regRes = await secureFetch({
-                    action: "ciel_register_account",
-                    email: email,
-                    pass: pass
-                });
-                
-                if (!regRes || !regRes.d || !regRes.d.token) {
-                    setCielProgress(0, "FAILED");
-                    logCielConsole(`Re-registration rebirth failed: ${JSON.stringify(regRes)}`, true);
-                    btn.innerText = "INITIATE CIEL OVERWRITE";
-                    btn.disabled = false;
-                    return;
-                }
-                
-                logCielConsole(`Rebirth success! Fresh Token secured. Proceeding to inject memory structure.`);
-            }
-
-            // Normal Auth handshaking
-            let cielToken = "";
-            let carxId = "";
-            
-            if (selectedCielProcedureId !== "restore") {
-                let authRes = await secureFetch({
-                    action: "ciel_authenticate",
-                    email: email,
-                    pass: pass
-                });
-                
-                if (!authRes || !authRes.d || !authRes.d.token) {
-                    setCielProgress(0, "FAILED");
-                    logCielConsole(`Handshake failed: ${JSON.stringify(authRes)}`, true);
-                    btn.innerText = "INITIATE CIEL OVERWRITE";
-                    btn.disabled = false;
-                    return;
-                }
-                
-                cielToken = authRes.d.token;
-                carxId = authRes.d.carxId || email.split('@')[0];
-                logCielConsole(`Handshake success! Corridor Token: ${cielToken}`);
-            } else {
-                // Untuk Rebirth Restore, gunakan token baru hasil register di atas
-                const freshLoginRes = await secureFetch({
-                    action: "ciel_authenticate",
-                    email: email,
-                    pass: pass
-                });
-                cielToken = freshLoginRes.d.token;
-                carxId = freshLoginRes.d.carxId || email.split('@')[0];
+                btn.innerText = "INITIATE CIEL OVERWRITE";
+                btn.disabled = false;
+                return;
             }
             
-            let profile = null;
-            let header = "";
+            // =========================================================================
+            // --- REGULAR SINGLE PROCEDURES (INJECT LIVE, NOS, MAP, ETC.) ---
+            // =========================================================================
+            setCielProgress(10, "AUTHENTICATING");
+            logCielConsole(`Connecting to CarX gateway for: ${email}...`);
+            
+            let authRes = await secureFetch({ action: "ciel_authenticate", email: email, pass: pass });
+            if (!authRes || !authRes.d || !authRes.d.token) {
+                setCielProgress(0, "FAILED");
+                logCielConsole(`Handshake failed: ${JSON.stringify(authRes)}`, true);
+                btn.innerText = "INITIATE CIEL OVERWRITE"; btn.disabled = false; return;
+            }
+            
+            let cielToken = authRes.d.token;
+            let carxId = authRes.d.carxId || email.split('@')[0];
+            logCielConsole(`Handshake success! Corridor Token secured.`);
+            
+            let profile = null; let header = "";
 
-            // Normal flow: pull profile
             setCielProgress(40, "PULLING PROFILE");
             logCielConsole(`Extracting Cloud Profile...`);
             
-            const profRes = await secureFetch({
-                action: "ciel_get_profile",
-                cielToken: cielToken
-            });
+            const profRes = await secureFetch({ action: "ciel_get_profile", cielToken: cielToken });
             
             if (!profRes || profRes.status === "error" || !profRes.profile) {
                 setCielProgress(0, "FAILED");
                 logCielConsole(`Failed to retrieve profile: ${profRes ? profRes.msg : 'Unknown error'}`, true);
-                btn.innerText = "INITIATE CIEL OVERWRITE";
-                btn.disabled = false;
-                return;
+                btn.innerText = "INITIATE CIEL OVERWRITE"; btn.disabled = false; return;
             }
             
             profile = profRes.profile;
@@ -1322,26 +1512,7 @@ GARANSI SAFEBAN = 1 Bulan
             setCielProgress(70, "ALTERING CORE");
             logCielConsole(`Altering memory configuration (Surgical operation in progress)...`);
             
-            // Step 3: Run Dynamic Memory Modification Algorithms
-            if (selectedCielProcedureId === "restore" || selectedCielProcedureId === "inject_live") {
-                if (selectedCielProcedureId === "restore") {
-                    try {
-                        let parsedInput = cleanAndParseJSON(payloadAreaText);
-                        // Jika payload berupa compressed base64 gzip data
-                        if (parsedInput.compressed_data || typeof parsedInput === "string") {
-                            profile = await decompressLocalJSON(parsedInput.compressed_data || parsedInput);
-                        } else {
-                            profile = parsedInput;
-                        }
-                    } catch(e) {
-                        setCielProgress(0, "FAILED");
-                        logCielConsole("Invalid Master JSON structure inside dynamic field payload!", true);
-                        btn.innerText = "INITIATE CIEL OVERWRITE";
-                        btn.disabled = false;
-                        return;
-                    }
-                }
-                
+            if (selectedCielProcedureId === "inject_live") {
                 profile.nickname = carxId;
                 if(silver !== null) profile.resources.soft.amount = silver;
                 if(gold !== null) profile.resources.hard = { amount: gold };
@@ -1406,7 +1577,6 @@ GARANSI SAFEBAN = 1 Bulan
                     if (!profile.cars) profile.cars = { "seed": 1337, "items": {} };
                     if (!profile.cars.items) profile.cars.items = {};
                     
-                    // Logika ID dinamis presisi murni dari Node.js v5.8
                     const keys = Object.keys(profile.cars.items).map(k => parseInt(k)).filter(k => !isNaN(k));
                     const nextId = (keys.length > 0 ? Math.max(...keys) + 1 : 1).toString();
                     profile.cars.items[nextId] = carData;
@@ -1414,9 +1584,7 @@ GARANSI SAFEBAN = 1 Bulan
                 } catch(e) {
                     setCielProgress(0, "FAILED");
                     logCielConsole("Error parsing Car JSON structure!", true);
-                    btn.innerText = "INITIATE CIEL OVERWRITE";
-                    btn.disabled = false;
-                    return;
+                    btn.innerText = "INITIATE CIEL OVERWRITE"; btn.disabled = false; return;
                 }
             }
             else if (selectedCielProcedureId === "unlock_printilan" || selectedCielProcedureId === "unlock_club") {
@@ -1434,7 +1602,6 @@ GARANSI SAFEBAN = 1 Bulan
                             }
                         });
                         
-                        // Chained Menu 11 Logic - Automerge clubs if present
                         if (inputData.clubs || typeof inputData === 'object') {
                             if (!profile.clubs) profile.clubs = {};
                             let incomingClubs = inputData.clubs || inputData;
@@ -1446,7 +1613,6 @@ GARANSI SAFEBAN = 1 Bulan
                         }
                         logCielConsole(`Successfully injected printilan keys.`);
                     } else {
-                        // All Club Unlock Integration
                         if(!profile.clubs) profile.clubs = {};
                         const clubsToMerge = inputData.clubs || inputData;
                         let clubCount = 0;
@@ -1459,9 +1625,7 @@ GARANSI SAFEBAN = 1 Bulan
                 } catch(e) {
                     setCielProgress(0, "FAILED");
                     logCielConsole("Error parsing JSON Payload!", true);
-                    btn.innerText = "INITIATE CIEL OVERWRITE";
-                    btn.disabled = false;
-                    return;
+                    btn.innerText = "INITIATE CIEL OVERWRITE"; btn.disabled = false; return;
                 }
             }
             else if (selectedCielProcedureId === "unlock_map") {
@@ -1472,8 +1636,6 @@ GARANSI SAFEBAN = 1 Bulan
                         logCielConsole(`Auto patch: Triggered experience amount safety override (+20100 XP)`);
                     }
                 }
-                
-                // standard map locations template injection murni
                 if (mapVal === "mountain") {
                     profile.game_world_parts = { "industrial": { "unlocked": true }, "midtown": { "unlocked": true }, "suburb": { "unlocked": true }, "port": { "unlocked": true }, "mountain": { "unlocked": true }, "sunset": {} };
                 } else {
@@ -1488,9 +1650,7 @@ GARANSI SAFEBAN = 1 Bulan
                 document.getElementById('cielDynamicField').classList.remove('hidden');
                 document.getElementById('cielDynamicLabel').innerText = "Decoded Profile Output:";
                 document.getElementById('cielDynamicArea').value = JSON.stringify(profile, null, 2);
-                btn.innerText = "INITIATE CIEL OVERWRITE";
-                btn.disabled = false;
-                return;
+                btn.innerText = "INITIATE CIEL OVERWRITE"; btn.disabled = false; return;
             }
             
             // Step 4: Base64 Gzip packing back and cloud post
@@ -1501,13 +1661,19 @@ GARANSI SAFEBAN = 1 Bulan
                 action: "ciel_push_profile",
                 cielToken: cielToken,
                 profile: profile,
-                header: header
+                header: header,
+                image: base64Img,
+                email: email      
             });
             
             if (pushRes && (pushRes.status === 200 || pushRes.status === 201 || pushRes.d)) {
                 setCielProgress(100, "COMPLETE");
                 logCielConsole("Ciel Overwritten completed successfully! Profile cloud status: SYNCED ✅");
                 alert("Ciel Protocol Overwrite Sukses! Profil target berhasil dimanipulasi.");
+
+                if (currentRole !== "admin") {
+                    base64Img = ""; document.getElementById('bukti').value = ""; document.getElementById('btnGen').disabled = true;
+                }
             } else {
                 setCielProgress(0, "FAILED");
                 logCielConsole(`Failed to push profile to Cloud: ${JSON.stringify(pushRes)}`, true);
@@ -1522,14 +1688,9 @@ GARANSI SAFEBAN = 1 Bulan
         }
     }
     
-    // Recovery decompress local JSON helper via Apps Script
     async function decompressLocalJSON(base64String) {
         logCielConsole("Decoding local segment payload using GAS engine...");
-        const res = await secureFetch({
-            action: "ciel_get_profile",
-            cielToken: "dummy",
-            forceRaw: base64String
-        });
+        const res = await secureFetch({ action: "ciel_get_profile", cielToken: "dummy", forceRaw: base64String });
         return res.profile;
     }
 </script>
