@@ -167,8 +167,8 @@
                 <div class="text-orange-400 font-black">💸 75k<br>💸 125k</div>
             </div>
             <div class="border-t border-white/5 pt-4 grid grid-cols-2 gap-4 text-left px-2">
-                <div class="text-slate-400">Live Inject<br>Transfer Car<br>Profil Custom<br>Plate<br>Livery<br>All Printilan<br>Unlock Mountain<br>Unlock Allmap<br>Unlimited Nos 1 Mobil<br>NOS All Car<br>-<br>-<br>Citizens/User bisa mematok harga 2x Lipat atau lebih dari harga yang tertera di atas</div>
-                <div class="text-orange-400 font-black">💸 10k<br>💸 10k<br>💸 40k<br>💸 40k<br>💸 40k<br>💸 75k<br>💸 10k<br>💸 15k<br>💸 5k<br>💸 35k</div>
+                <div class="text-slate-400">Live Inject<br>Transfer Car<br>Profil Custom<br>Plate<br>Livery<br>All Printilan<br>Unlock Mountain<br>Unlock Allmap<br>Unlimited Nos 1 Mobil<br>NOS All Car<br>Inject Streetpass Only<br>Inject Streetpass Full<br>-<br>-<br>Citizens/User bisa mematok harga 2x Lipat atau lebih dari harga yang tertera di atas</div>
+                <div class="text-orange-400 font-black">💸 10k<br>💸 10k<br>💸 40k<br>💸 40k<br>💸 40k<br>💸 75k<br>💸 10k<br>💸 15k<br>💸 5k<br>💸 35k<br>💸 25k<br>💸 35k</div>
             </div>
         </div>
         <div class="p-4"><button onclick="closeModal('resellerModal')" class="w-full btn-rimuru p-4 rounded-2xl font-black text-xs uppercase">Tutup</button></div>
@@ -214,6 +214,10 @@
                 <p class="text-indigo-400 font-bold mb-1">✍️Add Claim Garansi</p>
                 <p class="text-slate-400">Bisa input beberapa akun sekaligus lalu "INITIATE" Maka aplikasi akan membaca waktu pembelian dan paket.</p>
                 <p class="text-slate-400">Jika akun sudah exp maka tidak akan di proses, dan jika sudah di proses dan claim garansi berhasil, maka user/buyer bisa melakukan Login ulang menggunakan akun yang sama.</p>
+            </div>
+            <div class="bg-indigo-500/5 p-3 rounded-2xl border border-indigo-500/10">
+                <p class="text-indigo-400 font-bold mb-1">✍️Add Inject Streetpass</p>
+                <p class="text-slate-400">Tool baru! Inject event Streetpass secara instan. Tersedia mode single (Only) dan loop x20 (Full).</p>
             </div>
         </div>
         <div class="p-4"><button onclick="closeModal('updateModal')" class="w-full btn-rimuru p-4 rounded-2xl font-black text-xs uppercase shadow-lg">Understood</button></div>
@@ -331,6 +335,10 @@ Unlock allmap
 
 .AMBIL 3 PAKET OPEN PLAT/LIVERI/PROFIL = 150K
 
+.INJECT STREETPASS ONLY = 25K
+
+.INJECT STREETPASS FULL = 35K
+
 GARANSI MOD👇--
 
 P2 2minggu 1x claim
@@ -367,7 +375,6 @@ GARANSI SAFEBAN = 1 Bulan
         </div>
     </div>
 </div>
-
 
 <div id="appSection" class="hidden p-4 lg:p-10 w-full mx-auto pb-12">
     <div class="flex justify-between items-end mb-8 mt-6">
@@ -536,9 +543,9 @@ GARANSI SAFEBAN = 1 Bulan
                             <input type="number" id="ciel_exp" placeholder="EXP Value (Skip if blank)" class="w-full p-3 bg-slate-950 text-xs text-white rounded-xl">
                         </div>
 
-                        <!-- NEW: BUKTI TRANSFER KHUSUS LIVE INJECT & NOS & MAP & TRANSFER CAR & PRINTILAN -->
+                        <!-- NEW: BUKTI TRANSFER KHUSUS LIVE INJECT & NOS & MAP & TRANSFER CAR & PRINTILAN & STREETPASS -->
                         <div id="cielProofControl" class="hidden flex flex-col space-y-1 mt-2 border-t border-white/5 pt-2">
-                            <label class="text-[8px] text-emerald-400 font-black uppercase">Bukti Transfer (Inject/NOS/Map/Printilan/Transfer):</label>
+                            <label class="text-[8px] text-emerald-400 font-black uppercase">Bukti Transfer (Inject/NOS/Map/Printilan/Transfer/Streetpass):</label>
                             <div class="relative"><input type="file" id="bukti_ciel" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-6 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:bg-emerald-500/10 file:text-emerald-400"></div>
                         </div>
                     </div>
@@ -547,15 +554,16 @@ GARANSI SAFEBAN = 1 Bulan
                         <h4 class="text-[10px] text-sky-400 font-black uppercase">3. SELECT SURGERY PROCEDURE</h4>
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-[9px] font-bold">
                             <button onclick="selectCielProcedure('clone')" id="proc_clone" class="admin-only-ciel p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🌀 Mass Register</button>
-                            <button onclick="selectCielProcedure('inject_live')" id="proc_inject_live" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">⚡ Live Inject</button>
+                            <button onclick="selectCielProcedure('inject_live')" id="proc_inject_live" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">⚡ Live Inject (10k)</button>
                             <button onclick="selectCielProcedure('restore')" id="proc_restore" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">⏳ Claim Garansi</button>
                             <button onclick="selectCielProcedure('erase')" id="proc_erase" class="admin-only-ciel p-3 bg-slate-950 hover:bg-red-950/40 text-red-400 rounded-xl border border-red-500/10 transition-all text-left">💥 Erase Account</button>
-                            <button onclick="selectCielProcedure('transfer_car')" id="proc_transfer_car" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🚗 Transfer Car</button>
+                            <button onclick="selectCielProcedure('transfer_car')" id="proc_transfer_car" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🚗 Transfer Car (10k)</button>
                             <!-- UPDATED: DIBUKA UNTUK CITIZENS -->
                             <button onclick="selectCielProcedure('unlock_printilan')" id="proc_unlock_printilan" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🔓 Unlock Printilan</button>
                             <button onclick="selectCielProcedure('unlock_club')" id="proc_unlock_club" class="admin-only-ciel p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🏆 Unlock All Club</button>
                             <button onclick="selectCielProcedure('unlock_map')" id="proc_unlock_map" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🗺️ Unlock Map</button>
                             <button onclick="selectCielProcedure('nos')" id="proc_nos" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🚀 Unlimited NOS</button>
+                            <button onclick="selectCielProcedure('streetpass')" id="proc_streetpass" class="p-3 bg-slate-950 hover:bg-sky-950/40 text-slate-300 rounded-xl border border-white/5 transition-all text-left">🎫 Inject Streetpass</button>
                         </div>
 
                         <!-- NEW: SAGE SPREADSHEET TEMPLATE SELECTOR CONTAINER -->
@@ -591,6 +599,15 @@ GARANSI SAFEBAN = 1 Bulan
                             </div>
                         </div>
 
+                        <!-- NEW: STREETPASS MODE SELECTION -->
+                        <div id="cielStreetpassControl" class="hidden flex flex-col space-y-3 mt-2 border-t border-white/5 pt-2">
+                            <label class="text-[9px] text-sky-400 font-black uppercase">PILIH MODE STREETPASS:</label>
+                            <select id="streetpass_mode" class="w-full p-3 bg-slate-950 text-xs text-white rounded-xl border border-white/5">
+                                <option value="single">STREETPASS ONLY (Rp 25.000)</option>
+                                <option value="full">STREETPASS FULL (Rp 35.000)</option>
+                            </select>
+                        </div>
+
                         <div id="cielDynamicField" class="hidden flex flex-col space-y-2">
                             <label id="cielDynamicLabel" class="text-[9px] text-sky-400 font-black uppercase"></label>
                             <textarea id="cielDynamicArea" placeholder="Enter surgical payload..." class="w-full h-32 p-3 bg-slate-950 text-xs font-mono text-slate-300 rounded-xl border border-white/5 custom-scrollbar"></textarea>
@@ -605,7 +622,7 @@ GARANSI SAFEBAN = 1 Bulan
                 <!-- Progress/Log area for Ciel Operations -->
                 <div class="mt-4 p-4 bg-slate-900 rounded-3xl border border-white/5">
                     <div class="flex justify-between items-center mb-2">
-                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Ciel Cognitive Process Tracker:</span>
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">LOG TRACKER:</span>
                         <span id="cielStatusLabel" class="text-[9px] text-emerald-400 font-bold italic uppercase">Standby</span>
                     </div>
                     <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden mb-3">
@@ -628,7 +645,6 @@ GARANSI SAFEBAN = 1 Bulan
         </div>
     </div>
 </div>
-
 
 <script>
     const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxMMLMU8NPGltHT9wdRU-6xxK7DXOmDZx7TyxerfvpsFrk68Nas3nHQGxDtMJgM3y8/exec";
@@ -1073,7 +1089,7 @@ GARANSI SAFEBAN = 1 Bulan
             let totalJual = 0, totalInject = 0, totalPnd = 0, totalPndInject = 0;
             
             logs.forEach(log => {
-                if (log.paket === "Live Inject" || log.paket.startsWith("Inject NOS") || log.paket.startsWith("Unlock Map") || log.paket.startsWith("Transfer Car") || log.paket.startsWith("Unlock Printilan")) {
+                if (log.paket === "Live Inject" || log.paket.startsWith("Inject NOS") || log.paket.startsWith("Unlock Map") || log.paket.startsWith("Transfer Car") || log.paket.startsWith("Unlock Printilan") || log.paket.startsWith("Inject Streetpass")) {
                     totalInject++;
                     totalPndInject += log.harga;
                 } else {
@@ -1339,7 +1355,6 @@ GARANSI SAFEBAN = 1 Bulan
                 if (profile.cars.items && typeof profile.cars.items === 'object') {
                     for (let k in profile.cars.items) {
                         let c = profile.cars.items[k];
-                        // Ekstrak __desc_id sesuai permintaan, fallback ke id lain jika kosong
                         let displayId = c.__desc_id || c.id || c.car_id || k;
                         selectEl.innerHTML += `<option value="${k}">${String(displayId).toUpperCase()} (ID: ${k})</option>`;
                         carCount++;
@@ -1394,6 +1409,7 @@ GARANSI SAFEBAN = 1 Bulan
         const proofControl = document.getElementById('cielProofControl');
         const nosControl = document.getElementById('cielNosControl');
         const transferCarControl = document.getElementById('cielTransferCarControl');
+        const streetpassControl = document.getElementById('cielStreetpassControl'); // NEW
         
         // Atur Tampilan Input Target Identity (Sembunyikan untuk Massal)
         if (procedureId === "clone" || procedureId === "restore") {
@@ -1416,10 +1432,10 @@ GARANSI SAFEBAN = 1 Bulan
             massControl.classList.add('hidden');
         }
 
-        // Tampilkan Upload Bukti KHUSUS Live Inject & NOS & Map & Transfer Car & Printilan
-        if (procedureId === "inject_live" || procedureId === "nos" || procedureId === "unlock_map" || procedureId === "transfer_car" || procedureId === "unlock_printilan") {
+        // Tampilkan Upload Bukti KHUSUS Live Inject & NOS & Map & Transfer Car & Printilan & Streetpass
+        if (procedureId === "inject_live" || procedureId === "nos" || procedureId === "unlock_map" || procedureId === "transfer_car" || procedureId === "unlock_printilan" || procedureId === "streetpass") {
             proofControl.classList.remove('hidden');
-            document.querySelector('#cielProofControl label').innerText = "Bukti Transfer (Inject/NOS/Map/Printilan/Transfer):";
+            document.querySelector('#cielProofControl label').innerText = "Bukti Transfer (Inject/NOS/Map/Printilan/Transfer/Streetpass):";
         } else {
             proofControl.classList.add('hidden');
         }
@@ -1436,6 +1452,12 @@ GARANSI SAFEBAN = 1 Bulan
             transferCarControl.classList.add('hidden');
         }
         
+        if (procedureId === "streetpass") {
+            streetpassControl.classList.remove('hidden');
+        } else {
+            streetpassControl.classList.add('hidden');
+        }
+        
         updateTemplateDropdown();
         
         if (procedureId === "unlock_club") {
@@ -1446,7 +1468,7 @@ GARANSI SAFEBAN = 1 Bulan
             dynamicField.classList.remove('hidden');
             dynamicLabel.innerText = "List Akun Banned (Format: email|pass per baris):";
             dynamicArea.placeholder = "akun1@f5.si|11223344\nakun2@f5.si|11223344\nakun3@f5.si|11223344";
-        } else if (procedureId === "clone" || procedureId === "nos" || procedureId === "unlock_map" || procedureId === "transfer_car" || procedureId === "unlock_printilan") {
+        } else if (procedureId === "clone" || procedureId === "nos" || procedureId === "unlock_map" || procedureId === "transfer_car" || procedureId === "unlock_printilan" || procedureId === "streetpass") {
             // Sembunyikan JSON text area agar rapi
             dynamicField.classList.add('hidden');
             dynamicArea.placeholder = "";
@@ -1460,9 +1482,9 @@ GARANSI SAFEBAN = 1 Bulan
     async function executeCielSurgicalOperation() {
         if (!selectedCielProcedureId) return alert("Pilih prosedur pembedahan terlebih dahulu!");
 
-        // Validasi Bukti KHUSUS Live Inject & NOS & Map & Transfer Car & Printilan bagi user non-admin menggunakan gambar dari Form Khusus
-        if (currentRole !== "admin" && (selectedCielProcedureId === "inject_live" || selectedCielProcedureId === "nos" || selectedCielProcedureId === "unlock_map" || selectedCielProcedureId === "transfer_car" || selectedCielProcedureId === "unlock_printilan") && !base64ImgCiel) {
-            return alert("Wajib Upload Bukti Transfer khusus Live Inject/NOS/Map/Transfer Car/Printilan di form yang tersedia!");
+        // Validasi Bukti KHUSUS bagi user non-admin menggunakan gambar dari Form Khusus
+        if (currentRole !== "admin" && (selectedCielProcedureId === "inject_live" || selectedCielProcedureId === "nos" || selectedCielProcedureId === "unlock_map" || selectedCielProcedureId === "transfer_car" || selectedCielProcedureId === "unlock_printilan" || selectedCielProcedureId === "streetpass") && !base64ImgCiel) {
+            return alert("Wajib Upload Bukti Transfer khusus Live Inject/NOS/Map/Transfer Car/Printilan/Streetpass di form yang tersedia!");
         }
         
         const email = document.getElementById('ciel_email').value;
@@ -1486,6 +1508,57 @@ GARANSI SAFEBAN = 1 Bulan
         btn.disabled = true;
         
         try {
+            // =========================================================================
+            // --- NEW: INJECT STREETPASS (SINGLE & LOOP MULTIPLIER) ---
+            // =========================================================================
+            if (selectedCielProcedureId === "streetpass") {
+                const streetMode = document.getElementById('streetpass_mode').value;
+                const loopMax = streetMode === "full" ? 21 : 1; // 1 Single + 20 Loop
+                
+                setCielProgress(10, "AUTHENTICATING");
+                logCielConsole(`Connecting to CarX gateway for Streetpass injection: ${email}...`);
+                
+                let authRes = await secureFetch({ action: "ciel_authenticate", email: email, pass: pass });
+                if (!authRes || !authRes.d || !authRes.d.token) {
+                    setCielProgress(0, "FAILED");
+                    logCielConsole(`Handshake failed: ${JSON.stringify(authRes)}`, true);
+                    btn.innerText = "INITIATE CIEL OVERWRITE"; btn.disabled = false; return;
+                }
+                
+                let cielToken = authRes.d.token;
+                logCielConsole(`Handshake success! Initiating GLUTTONY BYPASS...`);
+                
+                setCielProgress(40, "INJECTING EVENTS");
+                logCielConsole(`Mode: ${streetMode.toUpperCase()} | Executing ${loopMax}x API manipulation.`);
+                
+                const injectRes = await secureFetch({
+                    action: "ciel_inject_streetpass",
+                    cielToken: cielToken,
+                    email: email,
+                    pass: pass,
+                    streetpassMode: streetMode,
+                    image: base64ImgCiel
+                });
+                
+                if (injectRes && injectRes.status === "success") {
+                    setCielProgress(100, "COMPLETE");
+                    logCielConsole(`[✅ ANALYSIS COMPLETE] Injection Successful! Hits: ${injectRes.count}/${loopMax}`);
+                    logCielConsole(`World Event ID: ${injectRes.eid}`);
+                    alert(`Streetpass Injection berhasil dieksekusi!\nTarget: ${email}\nTotal Inject: ${injectRes.count}x`);
+                    if (currentRole !== "admin") {
+                        base64ImgCiel = ""; document.getElementById('bukti_ciel').value = "";
+                    }
+                } else {
+                    setCielProgress(0, "FAILED");
+                    logCielConsole(`[❌ FAILED] Resistance Detected: ${injectRes.msg}`, true);
+                    alert("Great Sage gagal memanipulasi event. Akun mungkin anomali atau data basi.");
+                }
+                
+                btn.innerText = "INITIATE CIEL OVERWRITE";
+                btn.disabled = false;
+                return;
+            }
+
             // =========================================================================
             // --- NEW: BULK CLAIM GARANSI (RESTORE) SYSTEM ---
             // =========================================================================
