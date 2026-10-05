@@ -330,6 +330,23 @@ p5 1bulan 2x claim
     </div>
 </div>
 
+<!-- WARNING LOGIN MODAL -->
+<div id="warningLoginModal" class="hidden fixed inset-0 z-[999] flex items-center justify-center p-4 modal-overlay">
+    <div class="glass-card w-full max-w-md rounded-[2.5rem] overflow-hidden flex flex-col animate-pop border-2 border-red-500/50 shadow-2xl">
+        <div class="p-6 bg-red-600/20 border-b border-red-500/30 text-center">
+            <h2 class="text-red-400 font-black tracking-widest uppercase italic text-sm">⚠️ PENGUMUMAN PENTING ⚠️</h2>
+        </div>
+        <div class="p-6 text-center space-y-4">
+            <div class="bg-red-500/10 border border-red-500/20 p-5 rounded-2xl shadow-inner">
+                <p class="text-[11px] text-red-300 font-bold leading-relaxed uppercase tracking-wide">
+                    SEMENTARA ATAU BAHKAN BISA SELAMANYA DI VERSI TERBARU CARX, AKUN MOD/SAFEBAN ATAU BAHKAN INJECT GABISA DI BUKA ATAU STUCK DI LOADING, KALAU ADA YANG BELI AKUN DI WAJIBKAN MASIH MEMAKAI VERSI 1.22
+                </p>
+            </div>
+            <button onclick="closeModal('warningLoginModal')" class="w-full bg-red-900/80 hover:bg-red-600 text-red-200 hover:text-white p-4 rounded-2xl font-black text-xs uppercase shadow-lg transition-all tracking-widest border border-red-500/50">SAYA MENGERTI</button>
+        </div>
+    </div>
+</div>
+
 <div id="loginSection" class="flex h-screen items-center justify-center p-6 bg-slate-950">
     <div class="glass-card p-10 rounded-[3rem] w-full max-w-sm shadow-2xl border border-sky-500/20 relative overflow-hidden">
         <div class="absolute -top-24 -left-24 w-48 h-48 bg-sky-500/10 rounded-full blur-3xl"></div>
@@ -865,6 +882,9 @@ p5 1bulan 2x claim
             document.querySelectorAll('.admin-only-ciel').forEach(el => el.classList.add('hidden'));
             selectCielProcedure('inject_live');
         }
+        
+        // --- KODE TAMBAHAN UNTUK MEMUNCULKAN POP-UP SETELAH LOGIN ---
+        openModal('warningLoginModal');
     }
 
     async function handleGen(){
